@@ -3,8 +3,12 @@ package main
 
 import (
 	"fmt"
+	. "golangcrud/model"
 )
 
 func main() {
-	fmt.Println("Hello World!")
+	p := NewProject("Erstes Projekt")
+	Projects[p.Name] = *p
+
+	fmt.Println(*p)
 }
