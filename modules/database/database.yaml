@@ -1,0 +1,13 @@
+# Configuration
+
+name: Database Generator
+tasks:
+- kind: template
+  fileext: go
+  filename: schema
+  source:
+  - templates\schema.tmpl
+  target: database
+  template: schema
+
+

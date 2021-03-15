@@ -1,6 +1,6 @@
-// golangcrud project doc.go
+// GenerationDSL project doc.go
 
 /*
-golangcrud document
+GenerationDSL document
 */
 package main

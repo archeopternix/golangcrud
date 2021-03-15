@@ -1,0 +1,15 @@
+{{define "kinds"}}
+{{- if eq .Kind "Text"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Password"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Integer"}}	{{.Name}}	int	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Number"}}	{{.Name}}	int	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Boolean"}}	{{.Name}}	bool	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Email"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Tel"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Longtext"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Lookup"}}	{{.Name}}	string	`json:"{{lowercase .Name}}"`	// Lookup: {{.Object}}{{end}}
+{{- if eq .Kind "Parent"}}	{{.Name | plural}}	[]{{.Object}}	`json:"-"`	// one2many: childs only for view (not persistet){{end}}
+{{- if eq .Kind "Child"}}	{{.Name}}Id	string	`json:"{{lowercase .Name}}id"`	// one2many: Id of parent object{{end}}
+{{- if eq .Kind "manychild"}}	{{.Name}}Id	string	`json:"{{lowercase .Name}}id"`	// many2many: Id of parent object, mappingtable: {{.Object}}{{end}}
+{{- if eq .Kind "manyparent"}}	{{.Name | plural}}	[]{{.Name}}	`json:"-"`	// many2many: childs of target, mappingtable: {{.Object}}{{end}}
+{{- end}}
