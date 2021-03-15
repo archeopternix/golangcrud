@@ -203,7 +203,6 @@ func (m *Module) GenerateModule(app *model.Application) error {
 			}
 
 			if len(t.Filename) > 0 {
-				fmt.Println(t.Filename)
 				file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(t.Filename)+"."+t.Fileext)
 				writer, err := os.Create(file)
 				if err != nil {

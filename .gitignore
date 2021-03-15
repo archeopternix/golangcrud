@@ -7,3 +7,4 @@ XXX/model/test.go
 XXX/model/test2.go
 XXX/model/user.go
 *.exe
+XXX/database/schema.scm
