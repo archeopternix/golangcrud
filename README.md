@@ -1,2 +1,2 @@
 # golangcrud
-Application that generates a CreateReadUpdateDelete application with selectable backend (repositories) and frontend (REST or web based application)
+Application that generates a CRUD application with selectable modules for backend (repositories) and frontend (REST or web based application)
