@@ -1,9 +1,10 @@
 {{define "repository" -}}
-package database
-
+// Package model holds all entities and cross application definitions
+// Time of generation: {{.TimeStamp}}
+package model
 
 import (
-	model {{.Config.Name}}/model
+
 )
 
 // Env holds all interfaces describing the methods of the entity access structs.
@@ -11,12 +12,12 @@ import (
 type Env struct {
 	{{- range .Entities }}
 	{{.Name | lowercase | plural}} interface {
-		Get(id uint64) (*model.{{.Name}}, error)
-		GetAll() (model.{{.Name}}List, error) 
+		Get(id uint64) (*{{.Name}}, error)
+		GetAll() ({{.Name}}List, error) 
 		Delete(id uint64) error 
-		UpdateOrInsert({{.Name | lowercase}} *model.{{.Name}}) error 
+		UpdateOrInsert({{.Name | lowercase}} *{{.Name}}) error 
 	 	GetLabels() (Labels, error)
-		GetAllForParentID(parentId uint64, parentfield string) (model.{{.Name}}List, error)				
+		GetAllForParentID(parentID uint64, parentfield string) ({{.Name}}List, error)				
 	}
 	{{- end}}
 }

@@ -21,8 +21,8 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
-
 	"sync"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -61,6 +61,12 @@ func NewApplication() *Application {
 	})
 
 	return application
+}
+
+// TimeStamp neede for file generation. Will be added in the header of each file
+// to track the creation date and time of each file
+func (a *Application) TimeStamp() string {
+	return time.Now().Format(a.Settings.DateFormat + " " + a.Settings.TimeFormat)
 }
 
 // LoadFromFile loads the Application definition from a YAML file and parses all

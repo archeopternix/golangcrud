@@ -1,19 +1,21 @@
 # Configuration
-
 name: Model Generator
 tasks:
-- kind: copy
-  source:
-  - static\test.go
-  - static\test2.go
-  target: model
-
 - kind: template
   fileext: .go
   source:
   - templates\model.tmpl
-  - templates\kinds.tmpl
+  - templates\modeltypes.tmpl
   target: model
   template: model
+  
+- kind: template
+  fileext: .go
+  source:
+  - templates\repository.tmpl
+  target: model
+  template: repository
+  filename: repository
+
 
 

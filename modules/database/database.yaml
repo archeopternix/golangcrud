@@ -7,14 +7,8 @@ tasks:
   filename: schema
   source:
   - templates\schema.tmpl
+  - templates\schematypes.tmpl
   target: database
   template: schema
-- kind: template
-  fileext: .go
-  source:
-  - templates\repository.tmpl
-  target: database
-  template: repository
-  filename: repository
 
 

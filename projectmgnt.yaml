@@ -36,19 +36,20 @@ entities:
     name: User
     kind: default
     fields:
-    - name: Firstname
-      kind: Text
-      length: 45
-      required: true
     - name: Lastname
       kind: Text
       length: 45
       required: true
-    - name: Username
+      islabel: true
+    - name: Firstname
       kind: Text
       length: 45
       required: true
       islabel: true
+    - name: Username
+      kind: Text
+      length: 45
+      required: true
   task:
     name: Task
     kind: default
@@ -57,6 +58,7 @@ entities:
       kind: Longtext
       length: 200
       required: true
+      islabel: true
     - name: Tasktype
       kind: Lookup
 

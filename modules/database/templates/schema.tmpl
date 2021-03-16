@@ -2,14 +2,14 @@
 package database
 
 
-var defaultSchema = Schema{
-	create: `
+var defaultSchema = `
 {{- range .Entities }}
 CREATE TABLE {{.Name}} (
+	id serial PRIMARY KEY,
 {{- range .Fields }}
-	{{lowercase .Name}} {{lowercase .Kind}}{{if eq .Required false}} NULL{{end}},
+	{{template "schematypes" .}}
 {{- end}}
-	added_at timestamp default now()
+	created_at timestamp with time zone DEFAULT current_timestamp
 );	                                          
 {{- end}}
 `,
