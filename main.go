@@ -2,7 +2,7 @@
 package main
 
 import (
-	"fmt"
+	//	"fmt"
 	. "golangcrud/model"
 	"log"
 )
@@ -10,21 +10,21 @@ import (
 func main() {
 	a := NewApplication()
 	if err := a.LoadFromFile("projectmgnt.yaml"); err != nil {
-		log.Fatal(err)
+		log.Fatalf("ERROR: %v", err)
 	}
 	//	fmt.Println(a.StringYAML())
 
 	c := NewGenerator()
 	if err := c.AddModule("modules/model/models.yaml"); err != nil {
-		fmt.Println(err)
+		log.Fatalf("ERROR: %v", err)
 	}
 
 	if err := c.AddModule("modules/database/database.yaml"); err != nil {
-		fmt.Println(err)
+		log.Fatalf("ERROR: %v", err)
 	}
 
 	if err := c.GenerateAll(a); err != nil {
-		fmt.Println(err)
+		log.Fatalf("ERROR: %v", err)
 	}
 
 	//	fmt.Println(c.StringYAML())

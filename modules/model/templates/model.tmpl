@@ -8,9 +8,8 @@ package model
 // tags for database mapping is included
 type {{.Name}} struct {
 	Id     string     		`json:"id, db:id"`
-{{range .Fields}}{{template "kinds" .}}
+{{range .Fields}}{{template "kinds" .}}{{end -}}
 	CreatedAt time.Time 	`json:"id, db:"created_at"`
-{{end -}}
 }
 
 // {{.Name}}List definition for a slice of {{plural .Name}}
