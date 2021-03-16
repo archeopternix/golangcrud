@@ -1,0 +1,9 @@
+{{define "list" -}}
+{{"{{"}}define "{{lowercase .Name}}list" {{"}}"}}
+{{"{{"}}template "base" .{{"}}"}}
+<!-- Time: {{.TimeStamp}} -->
+{{"{{"}}template "{{lowercase .Name}}listtable" .Data{{"}}"}}
+
+{{"{{"}}template "_footer" .{{"}}"}}
+{{"{{"}}end{{"}}"}}         
+{{end}}

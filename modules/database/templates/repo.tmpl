@@ -1,0 +1,92 @@
+{{define "repo" -}}
+// Package database contains structures and function for generic database access
+// Generated code - do not modify it will be overwritten!!
+// Time: {{.TimeStamp}}
+package database
+
+import (
+	"github.com/jmoiron/sqlx"	
+	"fmt"
+	. "model"
+)
+
+// {{.Name}}Repo is the interface for a {{.Name}} repository that will persist 
+// and retrieve data and has to be implemented for concrete Databases 
+// (e.g. db *sqlx.DB) or other respositories
+type {{.Name}}Repo struct{
+	// pointer to the global database
+	DB *sqlx.DB
+}
+
+// Get queries a {{.Name | lowercase}} by id, throws an error when id is not found
+func (repo {{.Name}}Repo) Get(id uint64) (*{{.Name}}, error) {
+	{{.Name | lowercase}} := new({{.Name}})
+	if err := db.Get({{.Name | lowercase}}, "SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1", id); err != nil {
+		return nil, fmt.Errorf("get {{.Name | lowercase}} with id %d, %v", id, err)
+	}
+	return {{.Name | lowercase}}, nil
+}
+
+// Label returns all fields that have IsLabel= true 
+func (repo {{.Name}}Repo) Label() (string) {
+	label:=fmt.Sprinf("{{range .Fields}}{{if eq .IsLabel true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}}, {{.Name}}{{end}}{{end}})
+	return label
+}
+
+// Delete deletes the {{.Name | lowercase}} with id, throws an error when id is not found
+func (repo {{.Name}}Repo) Delete(id uint64) error {
+	deleteStatement := fmt.Sprintf("DELETE FROM {{.Name | lowercase | plural}} WHERE id=%d", id)
+	if _, err := db.Exec(deleteStatement); err != nil {
+		return fmt.Errorf("delete {{.Name | lowercase}} with id %d, %v", id, err)
+	}
+	return nil
+}
+
+// UpdateOrInsert checks if a {{.Name | lowercase}} id exists and updates all fields,
+// when id is not found it inserts '{{.Name | lowercase}}' record into the table
+func (repo {{.Name}}Repo) UpdateOrInsert({{.Name | lowercase}} *{{.Name}}) error {
+	t{{.Name | lowercase}} := new({{.Name}})
+	idExistStatement := fmt.Sprintf("SELECT * FROM {{.Name | lowercase | plural}} WHERE id=%d", {{.Name | lowercase}}.Id)
+	if err := db.Get(t{{.Name | lowercase}}, idExistStatement); err != nil {
+		insertStatement := {{template "repoinsert" .}}
+		if _, err := db.NamedExec(insertStatement, {{.Name | lowercase}}); err != nil {
+			return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
+		}
+	} else {
+		
+		updateStatement := {{template "repoupdate" .}}
+		if _, err := db.NamedExec(updateStatement, {{.Name | lowercase}}); err != nil {
+			return fmt.Errorf("update {{.Name | lowercase| plural}}, %v", err)
+		}
+	}
+	return nil
+}
+
+// GetLabelsFor returns a map with the key id and the value of
+// all fields tagged with isLabel=true and separated by a blank
+func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
+	l := make(Labels)
+
+	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
+	if err != nil {
+		return nil, err
+	}
+	
+	for rows.Next() {
+		{{.Name | lowercase}} := new({{.Name}})
+		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
+			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, err %v", err)
+		}
+		{{$name:= .Name}}
+		label := fmt.Sprintf("{{range .Fields}}{{if eq .IsLabel true}}%s {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}},{{$name | lowercase}}.{{.Name}} {{end}}{{end}})
+		l[{{.Name | lowercase}}.ID] = label
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	return l, nil
+}
+{{end}}
+
+

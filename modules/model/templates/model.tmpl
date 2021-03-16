@@ -4,14 +4,16 @@
 // Time of generation: {{.TimeStamp}}
 package model
 
+import (
+	 "time"
+)
 
 // {{.Name}} entity that consists of all attributes and provides key functions.
 // tags for database mapping is included
 type {{.Name}} struct {
-	ID     string     		`json:"id, db:id"`
 {{range .Fields}}{{template "modeltypes" .}}
 {{end}}
-	CreatedAt time.Time 	`json:"id, db:"created_at"`
+	CreatedAt time.Time 	`json:"created_at, db:"created_at"`
 }
 
 // {{.Name}}List definition for a slice of {{plural .Name}}
@@ -23,81 +25,6 @@ func (obj {{.Name}}) Label() (string) {
 	label:=fmt.Sprinf("{{range .Fields}}{{if eq .IsLabel true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}}, {{.Name}}{{end}}{{end}})
 	return label
 }
-
-
-// Returns the unique ID for the JSON database
-// https://godoc.org/github.com/sonyarouje/simdb/db
-func (obj {{.Name}}) ID() (jsonField string, value interface{}) {
-	value = obj.Id
-	jsonField = "id"
-	return
-}
-
-// Label for {{.Name}} that will be shown in select boxes for one-2-many relationships
-// Select boxes returns the the ID of the parent Entity
-{{$name := .Name}}
-{{- range .Fields}}{{- if eq .IsLabel true}}
-func (obj {{$name}}) Label() (string) {
-	return obj.{{.Name}}
-}
-{{- end}}{{end}}
-
-// Database access functions:
-
-// Retrieve all entries for {{.Name}} from JSON database
-func GetAll{{plural .Name}}() (err error, entities []{{.Name}}) {
-	err = Database.Open({{.Name}}{}).Get().AsEntity(&entities)
-	if err != nil {
-		panic(err)
-	}
-	return err, entities
-}
-
-// retrieve the first {{.Name}} with specific Id from JSON database
-func Get{{.Name}}ById(id string) (err error, entity {{.Name}}) {
-	err = Database.Open({{.Name}}{}).Where("id", "=", id).First().AsEntity(&entity)
-	if err != nil {
-		panic(err)
-	}
-	return err, entity
-}
-
-{{$name := .Name}}
-{{- range .Fields}}{{if eq .Kind "child"}}
-// retrieve all {{$name | plural}} with same parent Id. All childs to one parent record
-func GetAll{{$name | plural}}By{{.Object}}Id(parentid string) (err error, entities []{{$name}}) {
-	err = Database.Open({{$name}}{}).Where("{{.Name | lowercase}}id", "=", parentid).Get().AsEntity(&entities)
-	if err != nil {
-		panic(err)
-	}
-	return err, entities
-}
-
-// Label from {{.Object}} (parent) that will be shown in select boxes for one-2-many relationships
-// Select boxes returns the the ID of the parent Entity
-func (obj {{$name}}) LabelBy{{.Object}}Id(id string) (string){
-	var entity {{.Object}}
-	err := Database.Open({{.Object}}{}).Where("id", "=", id).First().AsEntity(&entity)
-	if err != nil {
-		panic(err)
-	}
-	return entity.Label()
-}
-{{end}}{{end}}
-
-// Lookup helper function
-{{- $name := .Name}}
-{{range $i, $field := .Fields}}{{if eq $field.Kind "lookup" "child"}}
-// Loads all lookup entries for {{$field.Object}}
-func (obj {{$name}}) Lookup{{$field.Object}}() ([]{{$field.Object}}) {
-	err, {{$field.Object | lowercase}} := GetAll{{$field.Object | plural}}()
-	if err != nil {
-		panic(err)
-	}
-	return  {{$field.Object | lowercase}}
-}
-{{- end}}{{end}}
-
 {{end}}
 
 

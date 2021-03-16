@@ -104,10 +104,10 @@ func StringYAML(a interface{}) string {
 func (a *Application) parseDependencies() error {
 	for key, entity := range a.Entities {
 		// add ID field
-		entity.Fields = append(entity.Fields, Field{Name: "ID", Kind: "integer", Required: true})
+		entity.Fields = append(entity.Fields, Field{Name: "ID", Kind: "Integer", Required: true})
 		a.Entities[key] = entity
 
-		for _, field := range entity.Fields {
+		for i, field := range entity.Fields {
 
 			// search for lookup fields
 			if field.Kind == "Lookup" {
@@ -127,6 +127,9 @@ func (a *Application) parseDependencies() error {
 						},
 					}
 				}
+				entity := a.Entities[key]
+				entity.Fields[i].Name = entity.Fields[i].Name + "ID"
+				a.Entities[key] = entity
 			}
 		}
 	}
@@ -136,7 +139,7 @@ func (a *Application) parseDependencies() error {
 		if relation.Kind == "one_to_many" {
 			// add child field
 			childentity := a.Entities[strings.ToLower(relation.Child)]
-			childentity.Fields = append(childentity.Fields, Field{Name: relation.Parent, Kind: "Child", Object: relation.Parent})
+			childentity.Fields = append(childentity.Fields, Field{Name: relation.Parent + "ID", Kind: "Child", Object: relation.Parent})
 			a.Entities[strings.ToLower(relation.Child)] = childentity
 			// add parent field
 			parententity := a.Entities[strings.ToLower(relation.Parent)]

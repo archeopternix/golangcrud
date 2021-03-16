@@ -18,11 +18,11 @@ func main() {
 	if err := c.AddModule("modules/model/models.yaml"); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}
-	/*
-		if err := c.AddModule("modules/database/database.yaml"); err != nil {
-			log.Fatalf("ERROR: %v", err)
-		}
-	*/
+
+	if err := c.AddModule("modules/database/database.yaml"); err != nil {
+		log.Fatalf("ERROR: %v", err)
+	}
+
 	if err := c.GenerateAll(a); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}
