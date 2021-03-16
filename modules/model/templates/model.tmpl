@@ -4,11 +4,26 @@
 package model
 
 
+// {{.Name}} entity that consists of all attributes and provides key functions.
+// tags for database mapping is included
 type {{.Name}} struct {
-	Id     string     `json:"id"`
+	Id     string     		`json:"id, db:id"`
 {{range .Fields}}{{template "kinds" .}}
+	CreatedAt time.Time 	`json:"id, db:"created_at"`
 {{end -}}
 }
+
+// {{.Name}}List definition for a slice of {{plural .Name}}
+type {{.Name}}List []{{.Name}}
+
+// Label for {{.Name}} that will be shown in select boxes for one-2-many relationships
+// Select boxes returns the the ID of the parent Entity
+
+func (obj {{.Name}}) Label() (string) {
+	label:=fmt.Sprinf("{{range .Fields}}{{if eq .IsLabel true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}}, .Name{{end}}{{end}})
+	return label
+}
+
 
 // Returns the unique ID for the JSON database
 // https://godoc.org/github.com/sonyarouje/simdb/db

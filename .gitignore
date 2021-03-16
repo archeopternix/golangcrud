@@ -1,10 +1,2 @@
-
-XXX/database/schema.go
-XXX/model/project.go
-XXX/model/task.go
-XXX/model/tasktype.go
-XXX/model/test.go
-XXX/model/test2.go
-XXX/model/user.go
+XXX/*
 *.exe
-XXX/database/schema.scm

@@ -1,0 +1,22 @@
+{{define "repository" -}}
+package database
+
+type Env struct {
+	{{- range .Entities }}
+	// Replace the reference to models.BookModel with an interface
+	// describing its methods instead. All the other code remains exactly
+	// the same.
+	{{.Name | lowercase | plural}} interface {
+		Get(id uint64) (*model.{{.Name}}, error)
+		GetAll() (model.{{.Name}}List, error) 
+		Delete(id uint64) error 
+		UpdateOrInsert(*model.{{.Name | lowercase}}) error 
+	 	GetLabels() (Labels, error)
+		GetAllForParentID(parentId uint64, parentfield string) (model.{{.Name}}List, error)				
+	}
+	{{- end}}
+}
+
+// Labels will be populated by the unique id and all fields tagged with isLabel=true
+type Labels map[uint64]string
+{{- end}}

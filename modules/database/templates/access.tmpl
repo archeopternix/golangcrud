@@ -7,6 +7,18 @@ import (
 	
 )
 
+// {{.Name}}Repo is the interface for a {{.Name}} repository that will persist 
+// and retrieve data and has to be implemented for concrete Databases 
+// (e.g. db *sqlx.DB) or other respositories
+type {{.Name}}Repo interface{
+	Get{{.Name}}(db *sqlx.DB, id uint64) (*{{.Name}}, error)
+	GetAll{{plural .Name}}(db *sqlx.DB) ({{.Name}}List, error) 
+	Delete{{.Name}}(db *sqlx.DB, id uint64) error 
+	UpdateOrInsert{{.Name}}(db *sqlx.DB, {{.Name | lowercase}} *{{.Name}}) error 
+ 	GetLabelsFor{{plural .Name}}(db *sqlx.DB) (Labels, error)
+	Get{{plural .Name}}ForParentID(db *sqlx.DB, parentId uint64, parentfield string) ({{.Name}}List, error)
+}
+
 // Returns the unique ID for the JSON database
 // https://godoc.org/github.com/sonyarouje/simdb/db
 func (obj {{.Name}}) ID() (jsonField string, value interface{}) {

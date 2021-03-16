@@ -203,7 +203,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 			}
 
 			if len(t.Filename) > 0 {
-				file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(t.Filename)+"."+t.Fileext)
+				file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(t.Filename)+t.Fileext)
 				writer, err := os.Create(file)
 				if err != nil {
 					return fmt.Errorf("template generator %v", err)
@@ -216,7 +216,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 
 			} else {
 				for _, entity := range app.Entities {
-					file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(entity.Name)) + "." + t.Fileext
+					file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(entity.Name)) + t.Fileext
 					writer, err := os.Create(file)
 					if err != nil {
 						return fmt.Errorf("template generator %v", err)

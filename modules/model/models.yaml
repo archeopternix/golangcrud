@@ -9,7 +9,7 @@ tasks:
   target: model
 
 - kind: template
-  fileext: go
+  fileext: .go
   source:
   - templates\model.tmpl
   - templates\kinds.tmpl

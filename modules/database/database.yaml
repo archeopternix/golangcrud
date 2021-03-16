@@ -3,11 +3,18 @@
 name: Database Generator
 tasks:
 - kind: template
-  fileext: go
+  fileext: .go
   filename: schema
   source:
   - templates\schema.tmpl
   target: database
   template: schema
+- kind: template
+  fileext: .go
+  source:
+  - templates\repository.tmpl
+  target: database
+  template: repository
+  filename: repository
 
 
