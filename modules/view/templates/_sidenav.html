@@ -1,6 +1,6 @@
 {{define "sidenav" -}}
 {{"{{"}}define "sidenav" {{"}}"}}
-<!-- Time: {{.Object.TimeStamp}} -->
+<!-- Time: {{.TimeStamp}} -->
                 <aside class="menu is-hidden-mobile">
                   <p class="menu-label">
                       General
@@ -14,7 +14,7 @@
                     <ul class="menu-list">
                     <li><a>Masterdata</a>
                     {{range .Entities}}
-                    {{- if eq .EntityType 0}}               
+                    {{- if ne .Kind "Lookup"}}               
                           <ul>
                               <li><a {{"{{"}}if eq .Slug "{{.Name | plural}}" {{"}}"}}class="is-active"{{"{{"}}end{{"}}"}} href="/{{.Name | plural | lowercase}}">{{plural .Name}}</a></li>
                           </ul>
@@ -23,7 +23,7 @@
                     </li>
                     <li><a>Lookup's</a>
                     {{range .Entities}}
-                    {{- if eq .EntityType 1}}
+                    {{- if eq .Kind "Lookup"}}
                           <ul>
                               <li><a {{"{{"}}if eq .Slug "{{.Name | plural}}" {{"}}"}}class="is-active"{{"{{"}}end{{"}}"}} href="/{{.Name | plural | lowercase}}">{{plural .Name}}</a></li>
                           </ul>

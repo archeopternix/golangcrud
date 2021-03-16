@@ -10,7 +10,7 @@
                             <div class="card-table">
                               <div class="content">
                                 {{- range .Fields}}
-                    {{template "fieldtypes" . }}
+                    {{template "detailtypes" . }}
                                 {{end -}}
                               </div>
                             </div>    
@@ -29,7 +29,7 @@
                         </div>
                       </form>
                       {{"{{- if .Id}}"}} 
-                      {{- range .Fields}}{{if eq .Type "parent"}}
+                      {{- range .Fields}}{{if eq .Kind "Parent"}}
                       <hr class="hr" style="margin-bottom: 0;">
                       {{"{{"}}template "{{.Object | singular | lowercase}}listtable" .{{.Object | plural}}{{"}}"}}
                       {{- end}}{{end}}{{"{{"}}end{{"}}"}} 
@@ -37,105 +37,3 @@
 {{"{{"}}template "_footer" .{{"}}"}}
 {{"{{"}}end{{"}}"}}         
 {{end}}
-
-{{define "fieldtypes"}}
-{{- if eq .Type "string"}}            <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="text" placeholder="Text input" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "password"}}            <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                <div class="field is-grouped">                                  
-                                  <div class="control">
-                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="password" placeholder="****" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                  </div>
-                                  <div class="control">
-                                    <a class="button is-info" onmousedown="togglePassword('{{.Name | lowercase}}')" onmouseup="togglePassword('{{.Name | lowercase}}')">
-                                      Show
-                                    </a>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "text"}}            <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <textarea class="textarea" placeholder="Text input" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Rows 0}}rows="{{.Rows}}"{{end}} {{if gt .Size 0}}cols="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}></textarea>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "email"}}            <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control has-icons-left">
-                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="email" placeholder="Email" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                  <span class="icon is-small is-left">
-                                    <i class="fas fa-envelope"></i>
-                                  </span>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "tel"}}            <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control has-icons-left">
-                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="tel" placeholder="+49" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                    <span class="icon is-small is-left">
-                                      <i class="fas fa-phone"></i>
-                                    </span>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "int"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <input class="input" type="number" {{if gt .Step 0}}step="{{.Step}}"{{end}}  {{if gt .Min 0}}min="{{.Min}}"{{end}} {{if gt .Max 0}}max="{{.Max}}"{{end}} placeholder="Number input" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "number"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <input class="input" type="number" {{if gt .Step 0}}step="{{.Step}}"{{end}}  {{if gt .Min 0}}min="{{.Min}}"{{end}} {{if gt .Max 0}}max="{{.Max}}"{{end}} placeholder="Number input" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Maxlength 0}}maxlength="{{.Maxlength}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "bool"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <label class="radio">
-                                      <input type="radio" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="true" {{"{{"}}if eq .{{.Name}} true{{"}}"}}checked="{{"{{"}}.{{.Name}}{{"}}"}} {{"{{"}}end{{"}}"}}">
-                                      Yes
-                                    </label>
-                                    <label class="radio">
-                                      <input type="radio" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="false" {{"{{"}}if ne .{{.Name}} true{{"}}"}}checked="{{"{{"}}.{{.Name}}{{"}}"}} {{"{{"}}end{{"}}"}}">
-                                      No
-                                    </label>
-                                  </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
-                                </div>{{end}}
-{{- if eq .Type "lookup"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <div class="select">
-                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>{{"{{"}}${{.Name | lowercase}}:=.{{.Name}}{{"}}"}}
-                                       {{"{{"}}range .Lookup{{.Object}}{{"}}"}}
-                                        <option>{{"{{.Text}}"}}</option>
-                                      {{"{{end}}"}}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>{{end}}
-{{- if eq .Type "child"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
-                                  <div class="control">
-                                    <div class="select">
-                                      <select name="{{.Name | lowercase}}id" id="{{.Name | lowercase}}id" value="{{"{{"}}.{{.Name}}Id{{"}}"}}" {{with .Required}}required{{end}}>{{"{{"}}${{.Name | lowercase}}id:=.{{.Name}}Id{{"}}"}}
-                                       {{"{{"}}range .Lookup{{.Object}}{{"}}"}}
-                                        <option value="{{"{{.Id}}"}}">{{"{{.Label}}"}}</option>
-                                     {{/*   <option value="{{"{{.Id}}"}}" {{"{{"}}if eq .{{.id}} ${{.Name | lowercase}}id{{"}}"}}readonly="readonly"{{"{{"}}end{{"}}"}}>{{"{{.Label}}"}}</option>  */}}
-                                      {{"{{end}}"}}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>{{end}}                                
-{{- end}}

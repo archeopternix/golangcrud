@@ -1,21 +1,50 @@
 # Configuration
-name: Model Generator
+name: View Generator
 tasks:
 - kind: template
-  fileext: .go
+  fileext: .html
   source:
-  - templates\model.tmpl
-  - templates\modeltypes.tmpl
-  target: model
-  template: model
+  - templates\_dashboard.html
+  target: view\html
+  template: dashboard
+  filename: dashboard
   
 - kind: template
-  fileext: .go
+  fileext: .html
   source:
-  - templates\repository.tmpl
-  target: model
-  template: repository
-  filename: repository
-
-
+  - templates\_sidenav.html
+  target: view\html
+  template: sidenav
+  filename: _sidenav 
+  
+- kind: copy
+  source:
+  - templates\html\_base.html
+  - templates\html\_footer.html
+  - templates\html\_header.html
+  - templates\html\_hero.html
+  - templates\html\_mainnav.html
+  target: view\html
+  
+- kind: template
+  fileext: list.html
+  source:
+  - templates\list.html
+  target: view\html
+  template: list
+  
+- kind: template
+  fileext: listtable.html
+  source:
+  - templates\listtable.html
+  target: view\html
+  template: listtable
+  
+- kind: template
+  fileext: detail.html
+  source:
+  - templates\detail.html
+  - templates\detailtypes.html
+  target: view\html
+  template: detail
 
