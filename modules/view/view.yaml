@@ -1,6 +1,25 @@
 # Configuration
 name: View Generator
 tasks:
+# Server and Handlers
+- kind: copy
+  source:
+  - server\server.go
+  target: view
+
+# Controller handlers 
+- kind: copy
+  source:
+  - server\dashboardhandler.go
+  target: view
+  
+- kind: template
+  fileext: handler.go
+  source:
+  - server\controller.tmpl
+  target: view
+  template: controller
+  
 - kind: template
   fileext: .html
   source:
@@ -9,6 +28,7 @@ tasks:
   template: dashboard
   filename: dashboard
   
+# Navigation and page parts  
 - kind: template
   fileext: .html
   source:
@@ -25,7 +45,8 @@ tasks:
   - templates\html\_hero.html
   - templates\html\_mainnav.html
   target: view\html
-  
+
+# List and Detail page parts  
 - kind: template
   fileext: list.html
   source:
@@ -47,4 +68,6 @@ tasks:
   - templates\detailtypes.html
   target: view\html
   template: detail
+  
+
 

@@ -1,19 +1,29 @@
 {{define "controller" -}}
 // Generated code - do not modify it will be overwritten!!
-// Time: {{.Model.TimeStamp}}
+// Time: {{.TimeStamp}}
 package controller
 
 import (
 	"github.com/labstack/echo"
 	"net/http"
 	"strconv"
-	. "{{.App.Name}}/model"
+	. "/model"
 )
+
+
+type {{.Name}}Handler struct{
+	Get(c echo.Context) error
+	List(c echo.Context) error
+	New(c echo.Context) error
+	Create(c echo.Context) error
+	Update(c echo.Context) error
+	Delete(c echo.Context) error
+	List (c echo.Context) error
+}
 
 // -------------------------------
 // Handlers
 // -------------------------------
-{{with .Model}}
 // list handler
 func List{{plural .Name}}(c echo.Context) error {
 	err, {{.Name | plural | lowercase}} := GetAll{{plural .Name}}()
@@ -34,7 +44,7 @@ func Get{{.Name}}(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} with id:"+id+" not found")
 	}
 	{{$name := .Name}}
-	{{range .Fields}}{{if eq .Type "parent"}}
+	{{range .Fields}}{{if eq .Kind "Parent"}}
 	_, {{lowercase $name}}.{{.Name | plural}} = GetAll{{.Object | plural}}By{{$name}}Id(id)
 	{{end}}{{end}}
 	p:=NewPage("Edit {{.Name}}", "{{.Name | plural}}")
@@ -113,14 +123,14 @@ func validate{{.Name}}(p *Page) bool{
 	p.Errors = make(map[string]string)
 	data := p.Data.(*{{.Name}})
 	{{range .Fields}}
-	{{- if eq .Type "string" "email" "tel" "text" "password"}} if (data.{{.Name}} != "") {		
+	{{- if eq .Kind "Longtext" "Email" "Tel" "Text" "Password"}} if (data.{{.Name}} != "") {		
 		p.Errors["{{.Name}}"]="Please correct error!"	
 	}
-	{{else if eq .Type "bool"}} if (data.{{.Name}} != true) {		
+	{{else if eq .Kind "Boolean"}} if (data.{{.Name}} != true) {		
 		p.Errors["{{.Name}}"]="Please correct error!"
 	}
 	{{end}}{{end}}
 	return len(p.Errors) == 0
 	*/
 }
-{{end}}{{end}}
+{{end}}

@@ -1,0 +1,8 @@
+# Configuration
+name: Application Generator
+tasks:
+#Main
+- kind: copy
+  source:
+  - main.go
+  target: cmd

@@ -192,7 +192,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 						return err
 					}
 				} else {
-					log.Println("file '%s' created", path)
+					log.Printf("file '%s' created\n", path)
 				}
 			}
 		case "template":
