@@ -1,32 +1,23 @@
 {{define "controller" -}}
 // Generated code - do not modify it will be overwritten!!
-// Time: {{.TimeStamp}}
-package controller
+// Time: {{.Entity.TimeStamp}}
+package view
 
 import (
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"net/http"
-	"strconv"
-	. "/model"
+
+	. "{{.AppName}}/model"
 )
 
-
-type {{.Name}}Handler struct{
-	Get(c echo.Context) error
-	List(c echo.Context) error
-	New(c echo.Context) error
-	Create(c echo.Context) error
-	Update(c echo.Context) error
-	Delete(c echo.Context) error
-	List (c echo.Context) error
-}
+{{with .Entity}}
 
 // -------------------------------
 // Handlers
 // -------------------------------
-// list handler
-func List{{plural .Name}}(c echo.Context) error {
-	err, {{.Name | plural | lowercase}} := GetAll{{plural .Name}}()
+// List{{plural .Name}} 
+func (s Server) List{{plural .Name}}(c echo.Context) error {
+	{{.Name | plural | lowercase}},err := s.Env.{{.Name | plural}}.GetAll()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{plural .Name}} not found")
 	}
@@ -36,17 +27,17 @@ func List{{plural .Name}}(c echo.Context) error {
 }
 
 // get handler
-func Get{{.Name}}(c echo.Context) error {
+func (s Server) Get{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
-
-	err, {{lowercase .Name}} := Get{{.Name}}ById(id)
+	
+	{{lowercase .Name}}, err := s.Env.{{.Name | plural}}.Get(asUint(id))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} with id:"+id+" not found")
 	}
-	{{$name := .Name}}
+	{{- $name := .Name}}
 	{{range .Fields}}{{if eq .Kind "Parent"}}
-	_, {{lowercase $name}}.{{.Name | plural}} = GetAll{{.Object | plural}}By{{$name}}Id(id)
-	{{end}}{{end}}
+	{{lowercase $name}}.{{.Name | plural}},_ = s.Env.{{.Name | plural}}.GetAll{{.Object | plural}}By{{$name}}Id(asUint(id))
+	{{- end}}{{end}}
 	p:=NewPage("Edit {{.Name}}", "{{.Name | plural}}")
 	p.Data = {{lowercase .Name}}	
 
@@ -54,7 +45,7 @@ func Get{{.Name}}(c echo.Context) error {
 }
 
 // new handler
-func New{{.Name}}(c echo.Context) error {
+func (s Server) New{{.Name}}(c echo.Context) error {
 	{{lowercase .Name}} := new({{.Name}})
 	
 	p:=NewPage("New {{.Name}}", "{{.Name | plural}}")
@@ -64,7 +55,7 @@ func New{{.Name}}(c echo.Context) error {
 }
 
 // create handler
-func Create{{.Name}}(c echo.Context) (err error) {
+func (s Server) Create{{.Name}}(c echo.Context) (err error) {
 	{{lowercase .Name}} := new({{.Name}})
   	if err = c.Bind({{lowercase .Name}}); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} could not bound to params")
@@ -73,51 +64,51 @@ func Create{{.Name}}(c echo.Context) (err error) {
 	p:=NewPage("Error {{.Name}}", "{{.Name | plural}}")
 	p.Data = {{lowercase .Name}}
 	
-	if validate{{.Name}}(p) == false {
+	if s.validate{{.Name}}(p) == false {
     	return c.Render(http.StatusOK, "{{lowercase .Name}}detail", p)
   	}
 	
-	{{lowercase .Name}}.Id = strconv.Itoa(NextId({{.Name | printf "%q"}}))
-	err = Database.Insert({{lowercase .Name}})
+
+	err = s.Env.{{.Name | plural}}.UpdateOrInsert({{lowercase .Name}})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not created")
 	}
 	
-	return List{{plural .Name}}(c)
+	return s.List{{plural .Name}}(c)
 }
 
 // update handler
-func Update{{.Name}}(c echo.Context) (err error) {
+func (s Server) Update{{.Name}}(c echo.Context) (err error) {
 	{{lowercase .Name}} := new({{.Name}})
   	if err = c.Bind({{lowercase .Name}}); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} could not bound to params")
   	}
 
-	err = Database.Update({{lowercase .Name}})
+	err = s.Env.{{.Name | plural}}.UpdateOrInsert({{lowercase .Name}})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not be updated")
 	}
 
-	return List{{plural .Name}}(c)
+	return s.List{{plural .Name}}(c)
 }
 
 // delete handler
-func Delete{{.Name}}(c echo.Context) error {
+func (s Server) Delete{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
-	err, {{lowercase .Name}} := Get{{.Name}}ById(id)
+	{{lowercase .Name}},err := s.Env.{{.Name | plural}}.Get(asUint(id))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} with id:"+id+" not found")
 	}
-	err = Database.Delete({{lowercase .Name}})
+	err = s.Env.{{.Name | plural}}.Delete({{lowercase .Name}})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not be deleted")
 	}
 	
-	return List{{plural .Name}}(c)
+	return s.List{{plural .Name}}(c)
 }
 
 // generic validation handler for form
-func validate{{.Name}}(p *Page) bool{
+func (s Server) validate{{.Name}}(p *Page) bool{
 	return true // ToDo: custom validation
 	/*
 	p.Errors = make(map[string]string)
@@ -133,4 +124,5 @@ func validate{{.Name}}(p *Page) bool{
 	return len(p.Errors) == 0
 	*/
 }
+{{end}}
 {{end}}

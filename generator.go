@@ -167,7 +167,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 
 	for _, t := range m.Tasks {
 		// check or create path
-		path := filepath.Join(app.Config.BasePath, t.Target)
+		path := filepath.Join(app.Config.BasePath, app.Config.Name, t.Target)
 		if err := CheckMkdir(path); err != nil {
 			_, ok := err.(*DirectoryExistError)
 			if ok {
@@ -183,7 +183,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 		case "copy":
 			// copying all files from .Source to .Target
 			for _, src := range t.Source {
-				path := filepath.Join(app.Config.BasePath, t.Target, filepath.Base(src))
+				path := filepath.Join(app.Config.BasePath, app.Config.Name, t.Target, filepath.Base(src))
 				if err := CopyFile(src, path); err != nil {
 					_, ok := err.(*FileExistError)
 					if ok {
@@ -203,7 +203,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 			}
 
 			if len(t.Filename) > 0 {
-				file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(t.Filename)+t.Fileext)
+				file := filepath.Join(app.Config.BasePath, app.Config.Name, t.Target, strings.ToLower(t.Filename)+t.Fileext)
 				writer, err := os.Create(file)
 				if err != nil {
 					return fmt.Errorf("template generator %v", err)
@@ -216,13 +216,20 @@ func (m *Module) GenerateModule(app *model.Application) error {
 
 			} else {
 				for _, entity := range app.Entities {
-					file := filepath.Join(app.Config.BasePath, t.Target, strings.ToLower(entity.Name)) + t.Fileext
+					file := filepath.Join(app.Config.BasePath, app.Config.Name, t.Target, strings.ToLower(entity.Name)) + t.Fileext
 					writer, err := os.Create(file)
 					if err != nil {
 						return fmt.Errorf("template generator %v", err)
 					}
 					defer writer.Close()
-					if err := tmpl.ExecuteTemplate(writer, t.Template, entity); err != nil {
+					entityStruct := struct {
+						Entity  model.Entity
+						AppName string
+					}{
+						entity,
+						app.Config.Name,
+					}
+					if err := tmpl.ExecuteTemplate(writer, t.Template, entityStruct); err != nil {
 						return fmt.Errorf("templategenerator %v", err)
 					}
 					log.Printf("template '%s' for entity '%s' written to file '%s'\n", t.Template, entity.Name, file)

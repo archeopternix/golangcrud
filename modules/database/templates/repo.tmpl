@@ -1,14 +1,16 @@
 {{define "repo" -}}
 // Package database contains structures and function for generic database access
 // Generated code - do not modify it will be overwritten!!
-// Time: {{.TimeStamp}}
+// Time: {{.Entity.TimeStamp}}
 package database
 
 import (
 	"github.com/jmoiron/sqlx"	
 	"fmt"
-	. "model"
+	. "{{.AppName}}/model"
 )
+
+{{with .Entity}}
 
 // {{.Name}}Repo is the interface for a {{.Name}} repository that will persist 
 // and retrieve data and has to be implemented for concrete Databases 
@@ -87,6 +89,7 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 	}
 	return l, nil
 }
+{{end}}
 {{end}}
 
 

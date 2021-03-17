@@ -1,4 +1,5 @@
 {{define "detail" -}}
+{{with .Entity}}
 {{"{{"}}define "{{lowercase .Name}}detail" {{"}}"}}
 {{"{{"}}template "base" .{{"}}"}}
 <!-- Time: {{.TimeStamp}} -->
@@ -36,4 +37,5 @@
 {{"{{- end}}"}}  
 {{"{{"}}template "_footer" .{{"}}"}}
 {{"{{"}}end{{"}}"}}         
+{{end}}
 {{end}}

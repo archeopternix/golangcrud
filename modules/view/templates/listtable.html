@@ -1,4 +1,5 @@
 {{define "listtable" -}}
+{{with .Entity}}
 {{"{{"}}define "{{lowercase .Name}}listtable" {{"}}"}}
 <!-- Time: {{.TimeStamp}} -->
                        <div class="card events-card">      
@@ -64,6 +65,7 @@
                              </footer>                           
                         </div>  
 {{"{{"}}end{{"}}"}}         
+{{end}}
 {{end}}
 
 

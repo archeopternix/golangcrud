@@ -2,7 +2,10 @@
 name: Application Generator
 tasks:
 #Main
-- kind: copy
+- kind: template
+  fileext: .go
   source:
-  - main.go
-  target: cmd
+  - main.tmpl
+  target: 
+  template: main
+  filename: main

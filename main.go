@@ -9,6 +9,7 @@ import (
 
 func main() {
 	a := NewApplication()
+
 	if err := a.LoadFromFile("projectmgnt.yaml"); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}

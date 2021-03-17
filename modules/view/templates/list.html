@@ -1,4 +1,5 @@
 {{define "list" -}}
+{{with .Entity}}
 {{"{{"}}define "{{lowercase .Name}}list" {{"}}"}}
 {{"{{"}}template "base" .{{"}}"}}
 <!-- Time: {{.TimeStamp}} -->
@@ -6,4 +7,5 @@
 
 {{"{{"}}template "_footer" .{{"}}"}}
 {{"{{"}}end{{"}}"}}         
+{{end}}
 {{end}}

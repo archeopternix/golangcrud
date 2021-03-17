@@ -1,10 +1,19 @@
 # Configuration
 name: View Generator
 tasks:
-# Server and Handlers
+# Server 
+- kind: template
+  fileext: .go
+  source:
+  - server\server.tmpl
+  target: view
+  template: server
+  filename: server
+
+# Page   
 - kind: copy
   source:
-  - server\server.go
+  - server\page.go
   target: view
 
 # Controller handlers 

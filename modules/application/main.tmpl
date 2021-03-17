@@ -1,12 +1,14 @@
+{{define "main" -}}
 package main
 
 import (
-	. "view"
+	. "{{.Config.Name}}/view"
 )
 
 func main() {
 	env := Env{}
 	server := NewServer(env)
 	// Start server
-	server.Logger.Fatal(servere.Start(":8080"))
+	server.Logger.Fatal(server.Start(":8080"))
 }
+{{end}}

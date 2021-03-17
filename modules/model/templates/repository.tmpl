@@ -11,17 +11,12 @@ import (
 // Interfaces have to be implemented by concrete DB access functions 
 type Env struct {
 	{{- range .Entities }}
-	{{.Name | lowercase | plural}} {{.Name}}Repository
+	{{.Name | plural}} {{.Name}}Repository
 	{{- end}}	
-	{{- range .Entities }}
-	{{.Name | lowercase }}Handler Handler
-	{{- end}}
-	
-	HandlerMap map[string]Handler
 }
 
 
-// Handler are the standard handlers for CRUD applications
+/* Handler are the standard handlers for CRUD applications
 type Handler interface{
 	Get(c echo.Context) error
 	List(c echo.Context) error
@@ -29,13 +24,15 @@ type Handler interface{
 	Create(c echo.Context) error
 	Update(c echo.Context) error
 	Delete(c echo.Context) error
-	List (c echo.Context) error
 }
+*/
 
 // Labels will be populated by the unique id and all fields tagged with isLabel=true
 type Labels map[uint64]string
 
-{{- range .Entities }}
+{{range .Entities }}
+// {{.Name}}Repository is the interface that has to be implemented with concrete
+// data access functions (databases)
 type {{.Name}}Repository interface {
 	Get(id uint64) (*{{.Name}}, error)
 	GetAll() ({{.Name}}List, error) 
@@ -44,6 +41,6 @@ type {{.Name}}Repository interface {
  	GetLabels() (Labels, error)
 	GetAllForParentID(parentID uint64, parentfield string) ({{.Name}}List, error)				
 }
-{{- end}}
+{{end}}
 
 {{- end}}

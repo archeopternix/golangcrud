@@ -1,20 +1,31 @@
+{{define "server" -}}
 // Package view all view related structs and functions
 // Generated code - do not modify it will be overwritten!!
-// Time: 17.03.2021 09:33:01.755
+// Time: {{.TimeStamp}}
 package view
 
 import (
-	. "/model"
-	"net/http"
-	"strconv"
-
+	. "{{.Config.Name}}/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"html/template"
+	"strconv"
+	"io"
 )
+
+type FormatSettings struct {
+		CurrencySymbol    string
+		DecimalSeparator  string
+		ThousendSeparator string
+		TimeFormat        string
+		DateFormat        string
+}
 
 type Server struct {
 	*echo.Echo
-	env *Env
+	Env *Env
+
+	Settings FormatSettings
 }
 
 type Template struct {
@@ -25,9 +36,16 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func NewServer(env *Env) *echo.Echo {
+func NewServer(env *Env) *Server {
 	s := new(Server)
-	s.env = env
+	s.Env = env
+	s.Settings = FormatSettings{
+		CurrencySymbol: "{{.Settings.CurrencySymbol}}",
+		DecimalSeparator: "{{.Settings.DecimalSeparator}}",
+		ThousendSeparator: "{{.Settings.ThousendSeparator}}",
+		TimeFormat: "{{.Settings.TimeFormat}}",
+		DateFormat: "{{.Settings.DateFormat}}",		
+	}
 	s.Echo = echo.New()
 
 	// assets will be loaded from /static directory as /assets/*
@@ -38,14 +56,14 @@ func NewServer(env *Env) *echo.Echo {
 	renderer := &Template{
 		templates: template.Must(template.ParseGlob("view/*.html")),
 	}
-	e.Renderer = renderer
+	s.Renderer = renderer
 
 	// Middleware
 	s.Use(middleware.Logger())
 	s.Use(middleware.Recover())
 
 	// Routes
-	s.GET("/", s.DashboardHandler) // Opens Dashboard
+	s.GET("/", s.getDashboard) // Opens Dashboard
 
 	// routes for Project
 	s.GET("/projects", s.ListProjects)
@@ -56,6 +74,14 @@ func NewServer(env *Env) *echo.Echo {
 	s.POST("/projects/:id/delete", s.DeleteProject)
 
 	return s
+}
+
+// asUint returns a string as int or in case of an error 0
+func asUint(s string) uint64 {
+	if i, err := strconv.ParseUint(s, 10, 64); err == nil {
+		return i
+	}
+	return 0
 }
 
 /*
@@ -69,3 +95,4 @@ type Handler interface {
 	List(c echo.Context) error
 }
 */
+{{end}}

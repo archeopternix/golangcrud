@@ -1,7 +1,7 @@
 # Application
 config:
-  name: HTML-Frontend
-  basepath: XXX
+  name: SampleApp
+  basepath: \Users\A.Eisner\go\src
 settings:
   decimal_separator: ","
   currency_symbol: '€'
