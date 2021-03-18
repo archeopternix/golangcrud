@@ -1,4 +1,5 @@
-{{define "controller" -}}
+{{define "handler" -}}
+// Package view all view related structs and functions
 // Generated code - do not modify it will be overwritten!!
 // Time: {{.Entity.TimeStamp}}
 package view
@@ -6,16 +7,15 @@ package view
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-
-	. "{{.AppName}}/model"
+	"fmt"
+	model "{{.AppName}}/model"
 )
 
 {{with .Entity}}
 
-// -------------------------------
-// Handlers
-// -------------------------------
-// List{{plural .Name}} 
+
+// List{{plural .Name}} fetches all {{plural .Name}} recordes from database and
+// renders it with the '{{lowercase .Name}}list' template
 func (s Server) List{{plural .Name}}(c echo.Context) error {
 	{{.Name | plural | lowercase}},err := s.Env.{{.Name | plural}}.GetAll()
 	if err != nil {
@@ -26,7 +26,8 @@ func (s Server) List{{plural .Name}}(c echo.Context) error {
 	return c.Render(http.StatusOK, "{{lowercase .Name}}list", p)
 }
 
-// get handler
+// Get{{.Name}} gets one single record with 'id' from the database and  
+// renders it with the '{{lowercase .Name}}detail' template
 func (s Server) Get{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
 	
@@ -44,9 +45,10 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 	return c.Render(http.StatusOK, "{{lowercase .Name}}detail", p)
 }
 
-// new handler
+// New{{.Name}} creates a new empty record and  
+// renders it with the '{{lowercase .Name}}detail' template
 func (s Server) New{{.Name}}(c echo.Context) error {
-	{{lowercase .Name}} := new({{.Name}})
+	{{lowercase .Name}} := new(model.{{.Name}})
 	
 	p:=NewPage("New {{.Name}}", "{{.Name | plural}}")
 	p.Data = {{lowercase .Name}}
@@ -54,9 +56,10 @@ func (s Server) New{{.Name}}(c echo.Context) error {
 	return c.Render(http.StatusOK, "{{lowercase .Name}}detail", p)
 }
 
-// create handler
+// Create{{.Name}} creates a new record and prefills the record with the form fields
+// saves it to the databse and returns to the list view
 func (s Server) Create{{.Name}}(c echo.Context) (err error) {
-	{{lowercase .Name}} := new({{.Name}})
+	{{lowercase .Name}} := new(model.{{.Name}})
   	if err = c.Bind({{lowercase .Name}}); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} could not bound to params")
   	}
@@ -77,9 +80,10 @@ func (s Server) Create{{.Name}}(c echo.Context) (err error) {
 	return s.List{{plural .Name}}(c)
 }
 
-// update handler
+// Update{{.Name}} updates an existing record with values from the form fields
+// saves it to the databse and returns to the list view
 func (s Server) Update{{.Name}}(c echo.Context) (err error) {
-	{{lowercase .Name}} := new({{.Name}})
+	{{lowercase .Name}} := new(model.{{.Name}})
   	if err = c.Bind({{lowercase .Name}}); err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} could not bound to params")
   	}
@@ -92,16 +96,17 @@ func (s Server) Update{{.Name}}(c echo.Context) (err error) {
 	return s.List{{plural .Name}}(c)
 }
 
-// delete handler
+// Delete{{.Name}} deletes the record with id and
+// returns to the list view
 func (s Server) Delete{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
-	{{lowercase .Name}},err := s.Env.{{.Name | plural}}.Get(asUint(id))
+	_,err := s.Env.{{.Name | plural}}.Get(asUint(id))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} with id:"+id+" not found")
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' not found for deletion, %v", id, err))
 	}
-	err = s.Env.{{.Name | plural}}.Delete({{lowercase .Name}})
+	err = s.Env.{{.Name | plural}}.Delete(asUint(id))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not be deleted")
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' could not be deleted, %v", id,err))
 	}
 	
 	return s.List{{plural .Name}}(c)

@@ -1,3 +1,5 @@
+// Package view all view related structs and functions
+// Generated code - do not modify it will be overwritten!!
 package view
 
 import (

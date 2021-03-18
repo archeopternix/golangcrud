@@ -5,7 +5,7 @@
 package view
 
 import (
-	. "{{.Config.Name}}/model"
+	model "{{.Config.Name}}/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"html/template"
@@ -13,6 +13,8 @@ import (
 	"io"
 )
 
+// FormatSettings holds all settings for formatting outputs like currencies
+// time and date formats
 type FormatSettings struct {
 		CurrencySymbol    string
 		DecimalSeparator  string
@@ -21,22 +23,29 @@ type FormatSettings struct {
 		DateFormat        string
 }
 
+// Server main server based on echo server that holds all handlers and database
+// access functions
 type Server struct {
 	*echo.Echo
-	Env *Env
+	Env 	*model.Env
 
 	Settings FormatSettings
 }
 
+// Template pointer to templates, necessary for echo template handling
 type Template struct {
 	templates *template.Template
 }
 
+// Render renders echo templates
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func NewServer(env *Env) *Server {
+// NewServer creates a new main server based on echo that holds all handlers and database
+// access functions, It has to be initialised with a populated 'Env' structure that holds
+// the database access functions
+func NewServer(env *model.Env) *Server {
 	s := new(Server)
 	s.Env = env
 	s.Settings = FormatSettings{
@@ -84,15 +93,5 @@ func asUint(s string) uint64 {
 	return 0
 }
 
-/*
-type Handler interface {
-	Get(c echo.Context) error
-	List(c echo.Context) error
-	New(c echo.Context) error
-	Create(c echo.Context) error
-	Update(c echo.Context) error
-	Delete(c echo.Context) error
-	List(c echo.Context) error
-}
-*/
+
 {{end}}

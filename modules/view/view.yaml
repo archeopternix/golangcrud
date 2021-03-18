@@ -25,9 +25,9 @@ tasks:
 - kind: template
   fileext: handler.go
   source:
-  - server\controller.tmpl
+  - server\handler.tmpl
   target: view
-  template: controller
+  template: handler
   
 - kind: template
   fileext: .html
