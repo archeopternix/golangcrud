@@ -6,12 +6,13 @@
 package main
 
 import (
-	. "{{.Config.Name}}/view"
+	view "{{.Config.Name}}/view"
+	model "{{.Config.Name}}/model"
 )
 
 func main() {
-	env := Env{}
-	server := NewServer(env)
+	env := model.Env{}
+	server := view.NewServer(&env)
 	// Start server
 	server.Logger.Fatal(server.Start(":8080"))
 }

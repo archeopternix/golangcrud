@@ -38,9 +38,12 @@ type {{.Name}}Repository interface {
 	Get(id uint64) (*{{.Name}}, error)
 	GetAll() ({{.Name}}List, error) 
 	Delete(id uint64) error 
-	UpdateOrInsert({{.Name | lowercase}} *{{.Name}}) error 
+	Update({{.Name | lowercase}} *{{.Name}}) error 
+	Insert({{.Name | lowercase}} *{{.Name}}) error 
  	GetLabels() (Labels, error)
-	GetAllForParentID(parentID uint64, parentfield string) ({{.Name}}List, error)				
+	{{- range .Fields}}{{if eq .Kind "Parent"}}
+	GetAll{{.Name | plural}}ByParentID(parentID uint64) ({{.Name}}List, error)				
+	{{- end}}{{end}}
 }
 {{end}}
 

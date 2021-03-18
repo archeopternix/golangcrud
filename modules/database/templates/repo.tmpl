@@ -29,10 +29,27 @@ func (repo {{.Name}}Repo) Get(id uint64) (*{{.Name}}, error) {
 	return {{.Name | lowercase}}, nil
 }
 
-// Label returns all fields that have IsLabel= true 
-func (repo {{.Name}}Repo) Label() (string) {
-	label:=fmt.Sprinf("{{range .Fields}}{{if eq .IsLabel true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}}, {{.Name}}{{end}}{{end}})
-	return label
+// GetAll returns all records ordered by the fields  with isLabel=true
+func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
+	list := make({{.Name}}List)
+
+	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
+	if err != nil {
+		return nil, err
+	}
+	
+	for rows.Next() {
+		{{.Name | lowercase}} := new({{.Name}})
+		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
+			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, err %v", err)
+		}
+		list = append(list, {{.Name | lowercase}})
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 // Delete deletes the {{.Name | lowercase}} with id, throws an error when id is not found
@@ -44,22 +61,20 @@ func (repo {{.Name}}Repo) Delete(id uint64) error {
 	return nil
 }
 
-// UpdateOrInsert checks if a {{.Name | lowercase}} id exists and updates all fields,
-// when id is not found it inserts '{{.Name | lowercase}}' record into the table
-func (repo {{.Name}}Repo) UpdateOrInsert({{.Name | lowercase}} *{{.Name}}) error {
-	t{{.Name | lowercase}} := new({{.Name}})
-	idExistStatement := fmt.Sprintf("SELECT * FROM {{.Name | lowercase | plural}} WHERE id=%d", {{.Name | lowercase}}.Id)
-	if err := db.Get(t{{.Name | lowercase}}, idExistStatement); err != nil {
-		insertStatement := {{template "repoinsert" .}}
-		if _, err := db.NamedExec(insertStatement, {{.Name | lowercase}}); err != nil {
-			return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
-		}
-	} else {
-		
-		updateStatement := {{template "repoupdate" .}}
-		if _, err := db.NamedExec(updateStatement, {{.Name | lowercase}}); err != nil {
-			return fmt.Errorf("update {{.Name | lowercase| plural}}, %v", err)
-		}
+// Update updates all fields in the database table with data from *{{.Name}})
+func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *{{.Name}}) error {
+	updateStatement := {{template "repoupdate" .}}
+	if _, err := db.NamedExec(updateStatement, {{.Name | lowercase}}); err != nil {
+		return fmt.Errorf("update {{.Name | lowercase| plural}}, %v", err)
+	}
+	return nil
+}
+
+// Insert inserts a new record in the database table with data from *{{.Name}})
+func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *{{.Name}}) error {
+	insertStatement := {{template "repoinsert" .}}
+	if _, err := db.NamedExec(insertStatement, {{.Name | lowercase}}); err != nil {
+		return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
 	}
 	return nil
 }
@@ -89,6 +104,35 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 	}
 	return l, nil
 }
+
+{{$name:=.Name}}
+{{- range .Fields}}{{if eq .Kind "Parent"}}
+// GetAll{{$name | plural}}ForParentID returns a map with the key id and the value of
+// all fields tagged with isLabel=true and separated by a blank
+func (repo {{$name}}Repo) GetAll{{.Name | plural}}ForParentID(parentID uint64) ({{.Name}}List, error)	{
+	list := make({{.Name}}List)
+
+	query:= fmt.Sprintf("SELECT * FROM {{.Name | lowercase| plural}} WHERE id=%d", parentID)
+	rows, err := db.Queryx(query)
+	if err != nil {
+		return nil, fmt.Errorf("selecting {{.Name | lowercase| plural}} with id: '%d' from database, %v",parentID, err)
+	}
+	
+	for rows.Next() {
+		{{.Name | lowercase}} := new({{.Name}})
+		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
+			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, %v", err)
+		}
+		list = append(list, {{.Name | lowercase}})
+	}
+
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	return list, nil
+}			
+{{- end}}{{end}}
+
 {{end}}
 {{end}}
 

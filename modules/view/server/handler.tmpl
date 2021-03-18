@@ -37,7 +37,7 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 	}
 	{{- $name := .Name}}
 	{{range .Fields}}{{if eq .Kind "Parent"}}
-	{{lowercase $name}}.{{.Name | plural}},_ = s.Env.{{.Name | plural}}.GetAll{{.Object | plural}}By{{$name}}Id(asUint(id))
+	{{lowercase $name}}.{{.Name | plural}},_ = s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
 	{{- end}}{{end}}
 	p:=NewPage("Edit {{.Name}}", "{{.Name | plural}}")
 	p.Data = {{lowercase .Name}}	
@@ -72,7 +72,7 @@ func (s Server) Create{{.Name}}(c echo.Context) (err error) {
   	}
 	
 
-	err = s.Env.{{.Name | plural}}.UpdateOrInsert({{lowercase .Name}})
+	err = s.Env.{{.Name | plural}}.Insert({{lowercase .Name}})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not created")
 	}
@@ -88,7 +88,7 @@ func (s Server) Update{{.Name}}(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} could not bound to params")
   	}
 
-	err = s.Env.{{.Name | plural}}.UpdateOrInsert({{lowercase .Name}})
+	err = s.Env.{{.Name | plural}}.Update({{lowercase .Name}})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not be updated")
 	}
@@ -100,13 +100,10 @@ func (s Server) Update{{.Name}}(c echo.Context) (err error) {
 // returns to the list view
 func (s Server) Delete{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
-	_,err := s.Env.{{.Name | plural}}.Get(asUint(id))
+
+	err := s.Env.{{.Name | plural}}.Delete(asUint(id))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' not found for deletion, %v", id, err))
-	}
-	err = s.Env.{{.Name | plural}}.Delete(asUint(id))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' could not be deleted, %v", id,err))
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' could not be deleted, %v", id, err))
 	}
 	
 	return s.List{{plural .Name}}(c)
