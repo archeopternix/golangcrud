@@ -5,8 +5,8 @@
 <!-- Time: {{.TimeStamp}} -->
 {{"{{"}}$errors:= .Errors{{"}}"}}
 {{"{{"}}with .Data{{"}}"}}
-                      <form method="post" action="/{{.Name | plural | lowercase}}{{"{{if .Id}}"}}/{{"{{.Id}}"}}" name="{{"{{.Id}}"}}{{"{{end}}"}}">
-                        <input type="hidden" id="id" name="id" value="{{"{{.Id}}"}}">     
+                      <form method="post" action="/{{.Name | plural | lowercase}}{{"{{if .ID}}"}}/{{"{{.ID}}"}}" name="{{"{{.ID}}"}}{{"{{end}}"}}">
+                        <input type="hidden" id="id" name="id" value="{{"{{.ID}}"}}">     
                         <div class="card events-card">      
                             <div class="card-table">
                               <div class="content">
@@ -29,7 +29,7 @@
                            </footer>
                         </div>
                       </form>
-                      {{"{{- if .Id}}"}} 
+                      {{"{{- if .ID}}"}} 
                       {{- range .Fields}}{{if eq .Kind "Parent"}}
                       <hr class="hr" style="margin-bottom: 0;">
                       {{"{{"}}template "{{.Object | singular | lowercase}}listtable" .{{.Object | plural}}{{"}}"}}

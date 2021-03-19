@@ -8,7 +8,7 @@ import (
 	model "{{.Config.Name}}/model"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"html/template"
+	"text/template"
 	"strconv"
 	"io"
 )
@@ -63,7 +63,7 @@ func NewServer(env *model.Env) *Server {
 	// Instantiate a template registry with an array of template set
 	// Ref: https://gist.github.com/rand99/808e6e9702c00ce64803d94abff65678
 	renderer := &Template{
-		templates: template.Must(template.ParseGlob("view/*.html")),
+		templates: template.Must(template.ParseGlob("view/html/*.html")),
 	}
 	s.Renderer = renderer
 
@@ -74,13 +74,15 @@ func NewServer(env *model.Env) *Server {
 	// Routes
 	s.GET("/", s.getDashboard) // Opens Dashboard
 
+{{- range .Entities}}
 	// routes for Project
-	s.GET("/projects", s.ListProjects)
-	s.GET("/projects/:id", s.GetProject)
-	s.GET("/projects/new", s.NewProject)
-	s.POST("/projects", s.CreateProject)
-	s.POST("/projects/:id", s.UpdateProject)
-	s.POST("/projects/:id/delete", s.DeleteProject)
+	s.GET("/{{.Name | plural | lowercase}}", s.List{{.Name | plural}})
+	s.GET("/{{.Name | plural | lowercase}}/:id", s.Get{{.Name}})
+	s.GET("/{{.Name | plural | lowercase}}/new", s.New{{.Name}})
+	s.POST("/{{.Name | plural | lowercase}}", s.Create{{.Name}})
+	s.POST("/{{.Name | plural | lowercase}}/:id", s.Update{{.Name}})
+	s.POST("/{{.Name | plural | lowercase}}/:id/delete", s.Delete{{.Name}})
+{{- end}}
 
 	return s
 }

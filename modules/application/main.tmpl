@@ -8,10 +8,15 @@ package main
 import (
 	view "{{.Config.Name}}/view"
 	model "{{.Config.Name}}/model"
+	mock "{{.Config.Name}}/mockdatabase"
 )
 
 func main() {
-	env := model.Env{}
+	env := model.Env{
+{{- range .Entities}}
+		{{.Name | plural}}:  mock.New{{.Name}}Repo(),
+{{- end}}		
+	}
 	server := view.NewServer(&env)
 	// Start server
 	server.Logger.Fatal(server.Start(":8080"))

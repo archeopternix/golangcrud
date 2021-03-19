@@ -79,7 +79,7 @@
                                     <div class="select">
                                       <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>{{"{{"}}${{.Name | lowercase}}:=.{{.Name}}{{"}}"}}
                                        {{"{{"}}range .Lookup{{.Object}}{{"}}"}}
-                                        <option>{{"{{.Text}}"}}</option>
+                                        <option value="{{"{{.ID}}"}}">{{"{{.Text}}"}}</option>
                                       {{"{{end}}"}}
                                       </select>
                                     </div>
@@ -89,10 +89,10 @@
                                   <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
                                   <div class="control">
                                     <div class="select">
-                                      <select name="{{.Name | lowercase}}id" id="{{.Name | lowercase}}id" value="{{"{{"}}.{{.Name}}Id{{"}}"}}" {{with .Required}}required{{end}}>{{"{{"}}${{.Name | lowercase}}id:=.{{.Name}}Id{{"}}"}}
+                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>{{"{{"}}${{.Name | lowercase}}id:=.{{.Name}}{{"}}"}}
                                        {{"{{"}}range .Lookup{{.Object}}{{"}}"}}
-                                        <option value="{{"{{.Id}}"}}">{{"{{.Label}}"}}</option>
-                                     {{/*   <option value="{{"{{.Id}}"}}" {{"{{"}}if eq .{{.id}} ${{.Name | lowercase}}id{{"}}"}}readonly="readonly"{{"{{"}}end{{"}}"}}>{{"{{.Label}}"}}</option>  */}}
+                                        <option value="{{"{{.ID}}"}}">{{"{{.Label}}"}}</option>
+                                     {{/*   <option value="{{"{{.ID}}"}}" {{"{{"}}if eq .{{.ID}} ${{.Name | lowercase}}id{{"}}"}}readonly="readonly"{{"{{"}}end{{"}}"}}>{{"{{.Label}}"}}</option>  */}}
                                       {{"{{end}}"}}
                                       </select>
                                     </div>

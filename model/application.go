@@ -103,10 +103,6 @@ func StringYAML(a interface{}) string {
 // or add additional fields (e.g. Id field for every entity)
 func (a *Application) parseDependencies() error {
 	for key, entity := range a.Entities {
-		// add ID field
-		entity.Fields = append(entity.Fields, Field{Name: "ID", Kind: "Integer", Required: true})
-		a.Entities[key] = entity
-
 		for i, field := range entity.Fields {
 
 			// search for lookup fields
@@ -132,6 +128,12 @@ func (a *Application) parseDependencies() error {
 				a.Entities[key] = entity
 			}
 		}
+	}
+
+	for key, entity := range a.Entities {
+		// add ID field
+		entity.Fields = append(entity.Fields, Field{Name: "ID", Kind: "Integer", Required: true})
+		a.Entities[key] = entity
 	}
 
 	// add fields for relationships between entities

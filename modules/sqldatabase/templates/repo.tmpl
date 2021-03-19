@@ -109,7 +109,7 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 {{- range .Fields}}{{if eq .Kind "Parent"}}
 // GetAll{{$name | plural}}ForParentID returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
-func (repo {{$name}}Repo) GetAll{{.Name | plural}}ForParentID(parentID uint64) ({{.Name}}List, error)	{
+func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) ({{.Name}}List, error)	{
 	list := make({{.Name}}List)
 
 	query:= fmt.Sprintf("SELECT * FROM {{.Name | lowercase| plural}} WHERE id=%d", parentID)
