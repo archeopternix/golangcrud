@@ -35,12 +35,26 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "{{.Name}} with id:"+id+" not found")
 	}
+	
+	data := struct {		
+		Lookups map[string]model.Labels
+		{{range .Fields}}{{if eq .Kind "Parent" }}
+		{{.Object}}Childs model.{{.Object}}List
+		{{end}}	{{end}}
+		Entity  *model.{{.Name}}
+	}{}
+	data.Entity = {{lowercase .Name}}
+	data.Lookups = make(map[string]model.Labels)
+	
 	{{- $name := .Name}}
-	{{range .Fields}}{{if eq .Kind "Parent"}}
-	{{lowercase $name}}.{{.Name | plural}},_ = s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
-	{{- end}}{{end}}
+	{{range .Fields}}{{if eq .Kind "Lookup"}}
+	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
+	{{- end}}{{if eq .Kind "Parent" }}
+	data.{{.Object}}Childs, _ = s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
+	{{end}}	{{end}}
+	
 	p:=NewPage("Edit {{.Name}}", "{{.Name | plural}}")
-	p.Data = {{lowercase .Name}}	
+	p.Data = data
 
 	return c.Render(http.StatusOK, "{{lowercase .Name}}detail", p)
 }
@@ -49,9 +63,25 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 // renders it with the '{{lowercase .Name}}detail' template
 func (s Server) New{{.Name}}(c echo.Context) error {
 	{{lowercase .Name}} := new(model.{{.Name}})
+
+	data := struct {		
+		Lookups map[string]model.Labels
+		{{range .Fields}}{{if eq .Kind "Parent" }}
+		{{.Object}}Childs model.{{.Object}}List
+		{{end}}	{{end}}
+		Entity  *model.{{.Name}}
+	}{}
+	data.Entity = {{lowercase .Name}}
+	data.Lookups = make(map[string]model.Labels)
+	
+	{{- $name := .Name}}
+	{{range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
+	{{- end}}
+	{{end}}
 	
 	p:=NewPage("New {{.Name}}", "{{.Name | plural}}")
-	p.Data = {{lowercase .Name}}
+	p.Data = data
 
 	return c.Render(http.StatusOK, "{{lowercase .Name}}detail", p)
 }

@@ -5,13 +5,13 @@
 <!-- Time: {{.TimeStamp}} -->
 {{"{{"}}$errors:= .Errors{{"}}"}}
 {{"{{"}}with .Data{{"}}"}}
-                      <form method="post" action="/{{.Name | plural | lowercase}}{{"{{if .ID}}"}}/{{"{{.ID}}"}}" name="{{"{{.ID}}"}}{{"{{end}}"}}">
-                        <input type="hidden" id="id" name="id" value="{{"{{.ID}}"}}">     
+                      <form method="post" action="/{{.Name | plural | lowercase}}{{"{{if .Entity.ID}}"}}/{{"{{.Entity.ID}}"}}{{"{{end}}"}}" name="{{.Name | lowercase}}">
+                        <input type="hidden" id="id" name="id" value="{{"{{.Entity.ID}}"}}">     
                         <div class="card events-card">      
                             <div class="card-table">
                               <div class="content">
                                 {{- range .Fields}}
-                    {{template "detailtypes" . }}
+                    {{if ne .Name "ID"}}{{template "detailtypes" . }}{{end}}
                                 {{end -}}
                               </div>
                             </div>    
@@ -29,10 +29,10 @@
                            </footer>
                         </div>
                       </form>
-                      {{"{{- if .ID}}"}} 
+                      {{"{{- if .Entity.ID}}"}} 
                       {{- range .Fields}}{{if eq .Kind "Parent"}}
                       <hr class="hr" style="margin-bottom: 0;">
-                      {{"{{"}}template "{{.Object | singular | lowercase}}listtable" .{{.Object | plural}}{{"}}"}}
+                      {{"{{"}}template "{{.Object | singular | lowercase}}listtable" .{{.Object}}Childs{{"}}"}}
                       {{- end}}{{end}}{{"{{"}}end{{"}}"}} 
 {{"{{- end}}"}}  
 {{"{{"}}template "_footer" .{{"}}"}}

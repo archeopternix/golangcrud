@@ -124,6 +124,7 @@ func (a *Application) parseDependencies() error {
 					}
 				}
 				entity := a.Entities[key]
+				entity.Fields[i].Object = entity.Fields[i].Name
 				entity.Fields[i].Name = entity.Fields[i].Name + "ID"
 				a.Entities[key] = entity
 			}
