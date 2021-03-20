@@ -53,7 +53,7 @@ func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
 func (repo {{.Name}}Repo) Delete(id uint64) error {
 	_, ok := {{.Name | lowercase}}repo.data[id]
 	if !ok {
-		return fmt.Errorf("delete project with id %d, record not found", id)
+		return fmt.Errorf("delete project with id '%d', record not found", id)
 	}
 
 	delete({{.Name | lowercase}}repo.data, id)
@@ -62,6 +62,10 @@ func (repo {{.Name}}Repo) Delete(id uint64) error {
 
 // Update updates all fields in the database table with data from *{{.Name}})
 func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *{{.Name}}) error {
+	_, ok := {{.Name | lowercase}}repo.data[{{.Name | lowercase}}.ID]
+	if !ok {
+		return fmt.Errorf("update project with id '%d', record not found", {{.Name | lowercase}}.ID)
+	}	
 	{{.Name | lowercase}}repo.data[{{.Name | lowercase}}.ID] = *{{.Name | lowercase}}
 	return nil
 }

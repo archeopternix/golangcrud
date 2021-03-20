@@ -43,6 +43,17 @@ func Test{{.Name}}RepoPositive(t *testing.T) {
 		t.Logf("successfully updated record %d from db", record.ID)
 	}
 
+	var labels model.Labels
+	labels, err = {{.Name | lowercase}}db.GetLabels()
+	if err != nil {
+		t.Errorf("cannot get labels from db %v", err)
+	}
+	if len(labels) < 1 {
+		t.Errorf("records expected, count :%d", len(labels))
+	} else {
+		t.Logf("successfully retrieved %d labels from db", len(labels))
+	}
+
 	err = {{.Name | lowercase}}db.Delete(record.ID)
 	if err != nil {
 		t.Errorf("cannot delete %d from db %v", record.ID, err)
@@ -57,6 +68,7 @@ func Test{{.Name}}RepoPositive(t *testing.T) {
 	} else {
 		t.Logf("successfully deleted record %d from db", record.ID)
 	}
+		
 }
 
 func Test{{.Name}}RepoNegative(t *testing.T) {
