@@ -9,6 +9,22 @@ tasks:
   target: mockdatabase
   template: mockrepo
 
+- kind: template
+  fileext: repo_test.go
+  source:
+  - mockrepo_test.go
+  - mockrepo_testtypes.go
+  target: mockdatabase
+  template: mockrepotest
+  
+- kind: template
+  fileext: repo_test.go
+  source:
+  - mockmain_test.go
+  target: mockdatabase
+  template: mockmaintest
+  filename: main
+
 
 
 
