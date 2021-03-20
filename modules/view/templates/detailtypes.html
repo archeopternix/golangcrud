@@ -62,23 +62,15 @@
 {{- if eq .Kind "Boolean"}}     <div class="field">
                                   <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
                                   <div class="control">
-                                    <label class="radio">
-                                      <input type="radio" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}true" value="true" {{"{{"}}if eq .Entity.{{.Name}} true{{"}}"}}checked{{"{{"}}end{{"}}"}}">
-                                      Yes
-                                    </label>
-                                    <label class="radio">
-                                      <input type="radio" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}false" value="false" {{"{{"}}if ne .Entity.{{.Name}} true{{"}}"}}checked{{"{{"}}end{{"}}"}}">
-                                      No
-                                    </label>
+                                      <input type="checkbox" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="true" {{"{{"}}if .Entity.{{.Name}}{{"}}"}}checked{{"{{"}}end{{"}}"}}>
                                   </div>
-                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
                                 </div>{{end}}
 {{- if eq .Kind "Lookup"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
+                                  <label class="label">{{.Object}}</label>
                                   <div class="control">
                                     <div class="select">
-                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Name | plural}}"){{"}}"}}
+                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}">
+                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
                                         <option value="{{"{{$key}}"}}">{{"{{$value}}"}}</option>
                                       {{"{{end}}"}}
                                       </select>
@@ -86,11 +78,11 @@
                                   </div>
                                 </div>{{end}}
 {{- if eq .Kind "Child"}}             <div class="field">
-                                  <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
+                                  <label class="label">{{.Object}}</label>
                                   <div class="control">
                                     <div class="select">
-                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
-                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Name | plural}}"){{"}}"}}
+                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}">
+                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
                                         <option value="{{"{{$key}}"}}">{{"{{$value}}"}}</option>
                                       {{"{{end}}"}}
                                       </select>

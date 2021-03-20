@@ -13,7 +13,6 @@ import (
 
 {{with .Entity}}
 
-
 func Test{{.Name}}RepoPositive(t *testing.T) {
 	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "mockrepotesttypes" .}}{{end}}{{"}"}}
 	if err := {{.Name | lowercase}}db.Insert(record); err != nil {
@@ -48,10 +47,10 @@ func Test{{.Name}}RepoPositive(t *testing.T) {
 	if err != nil {
 		t.Errorf("cannot get labels from db %v", err)
 	}
-	if len(labels) < 1 {
-		t.Errorf("records expected, count :%d", len(labels))
-	} else {
+	if len(labels) == 1 {
 		t.Logf("successfully retrieved %d labels from db", len(labels))
+	} else {
+		t.Errorf("records expected, count :%d", len(labels))
 	}
 
 	err = {{.Name | lowercase}}db.Delete(record.ID)

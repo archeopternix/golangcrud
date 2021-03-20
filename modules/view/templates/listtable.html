@@ -2,6 +2,10 @@
 {{with .Entity}}
 {{"{{"}}define "{{lowercase .Name}}listtable" {{"}}"}}
 <!-- Time: {{.TimeStamp}} -->
+{{range .Fields}}
+{{- if eq .Kind "Child" "Lookup"}}
+ {{"{{"}}${{.Object | plural | lowercase}}Labels := .Lookups.{{.Object | plural}}{{"}}"}}
+{{- end}}{{end}}
                        <div class="card events-card">      
                             <div class="card-table">
                                 <div class="content">
@@ -15,13 +19,14 @@
                                       </tr>
                                     </thead>
                                         <tbody>
-                                          {{"{{"}}range .{{"}}"}}
+                                          {{"{{"}}range .Entities{{"}}"}}
                                           <tr>
                                             {{- $entityname := .Name}}
-                                            {{range .Fields}}
-                                              {{- if eq .Kind "Parent"}}
-                                              {{- else}}<td>
-                                                {{- if eq .Kind "Child"}}{{"{{"}}.LabelBy{{.Object}} .{{.Name}}{{"}}"}}
+                                            {{range .Fields}}                                            
+                                              <td>
+                                                {{- if eq .Kind "Parent"}}{{- else}}
+                                                {{- if eq .Kind "Child"}}{{"{{"}}index ${{.Object | plural | lowercase}}Labels .{{.Name}}{{"}}"}}
+                                                {{- else if eq .Kind "Lookup"}}{{"{{"}}index ${{.Object | plural | lowercase}}Labels .{{.Name}}{{"}}"}}
                                                 {{- else if eq .IsLabel true}}<a href="/{{$entityname | plural | lowercase}}/{{"{{.ID}}"}}">{{"{{"}}.{{.Name}}{{"}}"}}</a>
                                                 {{- else if eq .Kind "Boolean"}}<span>
                                                 {{"{{"}}if eq .{{.Name}} true{{"}}"}}<i class="far fa-check-square"></i>{{"{{"}}else{{"}}"}}<i class="far fa-square"></i>{{"{{"}}end{{"}}"}}

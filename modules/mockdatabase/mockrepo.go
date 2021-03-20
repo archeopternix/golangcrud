@@ -78,14 +78,14 @@ func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *{{.Name}}) error {
 	return nil
 }
 
-// GetLabelsFor returns a map with the key id and the value of
+// GetLabels returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
 func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
-	l := make(Labels)
-	l[1]="Alpha"
-	l[2]="Beta"
-	l[3]="Gamma"
-	return l, nil
+	labels := make(Labels)
+	for _, value := range {{.Name | lowercase}}repo.data {
+		labels[value.ID] = value.Label()
+	}
+	return labels, nil
 }
 
 {{$name:=.Name}}
