@@ -24,9 +24,6 @@ func (s Server) List{{plural .Name}}(c echo.Context) error {
 	
 	data := struct {		
 		Lookups map[string]model.Labels
-		{{- range .Fields}}{{if eq .Kind "Parent" }}
-		{{.Object}}Childs model.{{.Object}}List
-		{{- end}}{{end}}
 		Records  model.{{.Name}}List
 	}{}
 	data.Records = {{.Name | plural | lowercase}}
