@@ -69,9 +69,10 @@
                                   <label class="label">{{.Object}}</label>
                                   <div class="control">
                                     <div class="select">
-                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}">
+                                      <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}">
+                                       {{"{{"}}$selected:=.Entity.{{.Name}}{{"}}"}}
                                        {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
-                                        <option value="{{"{{$key}}"}}">{{"{{$value}}"}}</option>
+                                        <option value="{{"{{$key}}"}}" {{"{{"}}if eq $key $selected{{"}}"}}selected{{"{{"}}end{{"}}"}}>{{"{{$value}}"}}</option>
                                       {{"{{end}}"}}
                                       </select>
                                     </div>
@@ -82,8 +83,9 @@
                                   <div class="control">
                                     <div class="select">
                                       <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}">
+                                      {{"{{"}}$selected:=.Entity.{{.Name}}{{"}}"}}
                                        {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
-                                        <option value="{{"{{$key}}"}}">{{"{{$value}}"}}</option>
+                                        <option value="{{"{{$key}}"}}" {{"{{"}}if eq $key $selected{{"}}"}}selected{{"{{"}}end{{"}}"}}>{{"{{$value}}"}}</option>
                                       {{"{{end}}"}}
                                       </select>
                                     </div>

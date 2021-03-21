@@ -43,6 +43,10 @@ func (repo {{.Name}}Repo) Get(id uint64) (*{{.Name}}, error) {
 func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
 	var list {{.Name}}List
 	for _,value:=range {{.Name | lowercase}}repo.data {
+		{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+		{{.Object | lowercase}},_:= {{.Object | lowercase}}repo.Get(value.{{.Name}})
+		value.{{.Object}} = {{.Object | lowercase}}.Label()
+		{{- end}}{{end}}
 		list = append(list,value)
 	}
 			
@@ -92,8 +96,18 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 {{- range .Fields}}{{if eq .Kind "Parent"}}
 // GetAll{{$name | plural}}ForParentID returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
-func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) ({{.Name}}List, error)	{
-	return {{.Name | lowercase}}repo.GetAll()
+func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) ({{.Name}}List)	{
+	list := {{.Name}}List{}
+	{{.Name | plural | lowercase}}, err := {{.Name | lowercase}}repo.GetAll()
+	if err!=nil {
+		return list
+	}
+	for _, {{.Name | lowercase}} := range {{.Name | plural | lowercase}} {
+		if {{.Name | lowercase}}.{{$name}}ID == parentID {
+			list = append(list, {{.Name | lowercase}})
+		}
+	}
+	return list
 }			
 {{- end}}{{end}}
 

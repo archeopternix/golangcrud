@@ -27,11 +27,11 @@ func (s Server) List{{plural .Name}}(c echo.Context) error {
 		{{- range .Fields}}{{if eq .Kind "Parent" }}
 		{{.Object}}Childs model.{{.Object}}List
 		{{- end}}{{end}}
-		Entities  model.{{.Name}}List
+		Records  model.{{.Name}}List
 	}{}
-	data.Entities = {{.Name | plural | lowercase}}
+	data.Records = {{.Name | plural | lowercase}}
 	data.Lookups = make(map[string]model.Labels)
-	
+		
 	{{- $name := .Name}}
 	{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
 	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
@@ -63,6 +63,12 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 	data.Lookups = make(map[string]model.Labels)
 	
 	{{- $name := .Name}}
+	// Child tables when available
+	{{- range .Fields}}{{if eq .Kind "Parent"}}
+	data.{{.Object}}Childs = s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
+	{{- end}}{{end}}
+	
+	// Labels for 'Lookup' or 'Parent' tables
 	{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
 	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
 	{{- end}}{{end}}
@@ -120,7 +126,7 @@ func (s Server) Create{{.Name}}(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not created")
 	}
 	
-	return s.List{{plural .Name}}(c)
+	return c.Redirect(http.StatusFound, "/{{.Name | plural | lowercase}}")
 }
 
 // Update{{.Name}} updates an existing record with values from the form fields
@@ -136,20 +142,29 @@ func (s Server) Update{{.Name}}(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusNotFound, "Database: {{.Name}} could not be updated")
 	}
 
-	return s.List{{plural .Name}}(c)
+	return c.Redirect(http.StatusFound, "/{{.Name | plural | lowercase}}")
 }
 
 // Delete{{.Name}} deletes the record with id and
 // returns to the list view
 func (s Server) Delete{{.Name}}(c echo.Context) error {
 	id := c.Param("id")
+	
+	
+	{{- range .Fields}}{{if eq .Kind "Parent"}}
+	// one to many childs available do not delete
+	{{.Object | lowercase}}Childs := s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
+	if len({{.Object | lowercase}}Childs)>0 {
+		return echo.NewHTTPError(http.StatusPreconditionFailed, fmt.Sprintf("{{$name}} with id '%s' could not be deleted dependencies to {{.Object | plural}}", id))	
+	}
+	{{- end}}{{end}}
 
 	err := s.Env.{{.Name | plural}}.Delete(asUint(id))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("{{.Name}} with id '%s' could not be deleted, %v", id, err))
 	}
 	
-	return s.List{{plural .Name}}(c)
+	return c.Redirect(http.StatusFound, "/{{.Name | plural | lowercase}}")
 }
 
 // generic validation handler for form

@@ -3,7 +3,7 @@
 {{"{{"}}define "{{lowercase .Name}}list" {{"}}"}}
 {{"{{"}}template "base" .{{"}}"}}
 <!-- Time: {{.TimeStamp}} -->
-{{"{{"}}template "{{lowercase .Name}}listtable" .Data{{"}}"}}
+{{"{{"}}template "{{lowercase .Name}}listtable" .Data.Records{{"}}"}}
 
 {{"{{"}}template "_footer" .{{"}}"}}
 {{"{{"}}end{{"}}"}}         
