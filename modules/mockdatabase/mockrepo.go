@@ -44,8 +44,9 @@ func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
 	var list {{.Name}}List
 	for _,value:=range {{.Name | lowercase}}repo.data {
 		{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
-		{{.Object | lowercase}},_:= {{.Object | lowercase}}repo.Get(value.{{.Name}})
-		value.{{.Object}} = {{.Object | lowercase}}.Label()
+		if {{.Object | lowercase}},_:= {{.Object | lowercase}}repo.Get(value.{{.Name}}); {{.Object | lowercase}}!=nil {
+			value.{{.Object}} = {{.Object | lowercase}}.Label()
+		}
 		{{- end}}{{end}}
 		list = append(list,value)
 	}

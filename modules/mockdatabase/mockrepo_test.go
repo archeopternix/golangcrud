@@ -53,6 +53,15 @@ func Test{{.Name}}RepoPositive(t *testing.T) {
 		t.Errorf("records expected, count :%d", len(labels))
 	}
 
+	{{$name:=.Name}}
+	{{range .Fields}}{{if eq .Kind "Child"}}
+	if childs:= {{.Object | lowercase}}db.GetAll{{$name | plural}}ByParentID(record.{{.Name}});  len(childs) == 1 {
+		t.Logf("successfully retrieved %d labels by parentID from db", len(childs))
+	} else {
+		t.Errorf("1 record expected, count :%d", len(childs))
+	}
+	{{end}}{{end}}
+	
 	err = {{.Name | lowercase}}db.Delete(record.ID)
 	if err != nil {
 		t.Errorf("cannot delete %d from db %v", record.ID, err)
