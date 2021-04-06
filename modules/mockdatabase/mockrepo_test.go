@@ -13,6 +13,7 @@ import (
 
 {{with .Entity}}
 
+// Test{{.Name}}RepoPositive tests the positive cases for accessing {{.Name}}Repo
 func Test{{.Name}}RepoPositive(t *testing.T) {
 	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "mockrepotesttypes" .}}{{end}}{{"}"}}
 	if err := {{.Name | lowercase}}db.Insert(record); err != nil {
@@ -79,6 +80,8 @@ func Test{{.Name}}RepoPositive(t *testing.T) {
 		
 }
 
+// Test{{.Name}}RepoPositive tests the negative cases for accessing {{.Name}}Repo
+// is expected to throw errors
 func Test{{.Name}}RepoNegative(t *testing.T) {
 	list, err := {{.Name | lowercase}}db.GetAll()
 	if err != nil {
