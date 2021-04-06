@@ -7,7 +7,7 @@ package database
 import (
 	"github.com/jmoiron/sqlx"	
 	"fmt"
-	. "{{.AppName}}/model"
+	model "{{.AppName}}/model"
 )
 
 {{with .Entity}}
@@ -21,8 +21,8 @@ type {{.Name}}Repo struct{
 }
 
 // Get queries a {{.Name | lowercase}} by id, throws an error when id is not found
-func (repo {{.Name}}Repo) Get(id uint64) (*{{.Name}}, error) {
-	{{.Name | lowercase}} := new({{.Name}})
+func (repo {{.Name}}Repo) Get(id uint64) (*model.{{.Name}}, error) {
+	{{.Name | lowercase}} := new(model.{{.Name}})
 	if err := db.Get({{.Name | lowercase}}, "SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1", id); err != nil {
 		return nil, fmt.Errorf("get {{.Name | lowercase}} with id %d, %v", id, err)
 	}
@@ -30,8 +30,8 @@ func (repo {{.Name}}Repo) Get(id uint64) (*{{.Name}}, error) {
 }
 
 // GetAll returns all records ordered by the fields  with isLabel=true
-func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
-	list := make({{.Name}}List)
+func (repo {{.Name}}Repo) GetAll() (model.{{.Name}}List, error) {
+	list := make(model.{{.Name}}List)
 
 	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
 	if err != nil {
@@ -39,7 +39,7 @@ func (repo {{.Name}}Repo) GetAll() ({{.Name}}List, error) {
 	}
 	
 	for rows.Next() {
-		{{.Name | lowercase}} := new({{.Name}})
+		{{.Name | lowercase}} := new(model.{{.Name}})
 		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
 			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, err %v", err)
 		}
@@ -62,7 +62,7 @@ func (repo {{.Name}}Repo) Delete(id uint64) error {
 }
 
 // Update updates all fields in the database table with data from *{{.Name}})
-func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *{{.Name}}) error {
+func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *model.{{.Name}}) error {
 	updateStatement := {{template "repoupdate" .}}
 	if _, err := db.NamedExec(updateStatement, {{.Name | lowercase}}); err != nil {
 		return fmt.Errorf("update {{.Name | lowercase| plural}}, %v", err)
@@ -71,7 +71,7 @@ func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *{{.Name}}) error {
 }
 
 // Insert inserts a new record in the database table with data from *{{.Name}})
-func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *{{.Name}}) error {
+func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *model.{{.Name}}) error {
 	insertStatement := {{template "repoinsert" .}}
 	if _, err := db.NamedExec(insertStatement, {{.Name | lowercase}}); err != nil {
 		return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
@@ -81,8 +81,8 @@ func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *{{.Name}}) error {
 
 // GetLabelsFor returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
-func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
-	l := make(Labels)
+func (repo {{.Name}}Repo) GetLabels() (model.Labels, error) {
+	l := make(model.Labels)
 
 	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
 	if err != nil {
@@ -90,7 +90,7 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 	}
 	
 	for rows.Next() {
-		{{.Name | lowercase}} := new({{.Name}})
+		{{.Name | lowercase}} := new(model.{{.Name}})
 		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
 			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, err %v", err)
 		}
@@ -109,8 +109,8 @@ func (repo {{.Name}}Repo) GetLabels() (Labels, error) {
 {{- range .Fields}}{{if eq .Kind "Parent"}}
 // GetAll{{$name | plural}}ForParentID returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
-func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) ({{.Name}}List, error)	{
-	list := make({{.Name}}List)
+func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) (model.{{.Name}}List, error)	{
+	list := make(model.{{.Name}}List)
 
 	query:= fmt.Sprintf("SELECT * FROM {{.Name | lowercase| plural}} WHERE id=%d", parentID)
 	rows, err := db.Queryx(query)
@@ -119,7 +119,7 @@ func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) ({
 	}
 	
 	for rows.Next() {
-		{{.Name | lowercase}} := new({{.Name}})
+		{{.Name | lowercase}} := new(model.{{.Name}})
 		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
 			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, %v", err)
 		}

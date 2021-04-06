@@ -75,7 +75,7 @@ func NewServer(env *model.Env) *Server {
 	s.GET("/", s.getDashboard) // Opens Dashboard
 
 {{- range .Entities}}
-	// routes for Project
+	// routes for {{.Name}}
 	s.GET("/{{.Name | plural | lowercase}}", s.List{{.Name | plural}})
 	s.GET("/{{.Name | plural | lowercase}}/:id", s.Get{{.Name}})
 	s.GET("/{{.Name | plural | lowercase}}/new", s.New{{.Name}})

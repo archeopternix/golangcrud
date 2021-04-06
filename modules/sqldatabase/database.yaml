@@ -12,7 +12,7 @@ tasks:
 - kind: template
   fileext: repo.go
   source:
-  - templates\repo.tmpl
+  - templates\repo.go
   - templates\repoupdate.tmpl
   - templates\repoinsert.tmpl
   target: database
