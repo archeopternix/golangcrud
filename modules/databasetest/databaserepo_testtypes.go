@@ -1,4 +1,4 @@
-{{define "mockrepotesttypes"}}
+{{define "databaserepotesttypes"}}
 {{- if eq .Kind "Text"}}{{.Name}}: getText(15),{{end}}
 {{- if eq .Kind "Password"}}{{.Name}}: getText(15),{{end}}
 {{- if eq .Kind "Integer"}}{{- if ne .Name "ID"}}{{.Name}}: rand.Uint64(),{{end}}{{end}}

@@ -2,7 +2,7 @@
 // Package mockdatabase contains structures and function for mock database access
 // Generated code - do not modify it will be overwritten!!
 // Time: {{.Entity.TimeStamp}}
-package mockdatabase
+package database
 
 import (
 	"fmt"

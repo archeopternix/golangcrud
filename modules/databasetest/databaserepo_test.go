@@ -1,8 +1,8 @@
-{{define "mockrepotest" -}}
+{{define "databaserepotest" -}}
 // Package mockdatabase contains structures and function for mock database access
 // Generated code - do not modify it will be overwritten!!
 // Time: {{.Entity.TimeStamp}}
-package mockdatabase
+package database
 
 import (
 	"testing"
@@ -15,7 +15,7 @@ import (
 
 // Test{{.Name}}RepoPositive tests the positive cases for accessing {{.Name}}Repo
 func Test{{.Name}}RepoPositive(t *testing.T) {
-	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "mockrepotesttypes" .}}{{end}}{{"}"}}
+	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "databaserepotesttypes" .}}{{end}}{{"}"}}
 	if err := {{.Name | lowercase}}db.Insert(record); err != nil {
 		t.Errorf("adding {{.Name}} failed %v, %d", err, rand.Int())
 	}
@@ -100,7 +100,7 @@ func Test{{.Name}}RepoNegative(t *testing.T) {
 		t.Logf("as expected record not found and error returned")
 	}
 
-	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "mockrepotesttypes" .}}{{end}}{{"}"}}
+	record := &model.{{.Name}}{{"{"}} {{range .Fields}}{{template "databaserepotesttypes" .}}{{end}}{{"}"}}
 	err = {{.Name | lowercase}}db.Update(record)
 	if err == nil {
 		t.Errorf("expected not to update a record and throw an error")
