@@ -4,6 +4,9 @@
 // Time: {{.TimeStamp}}
 package database
 
+import (
+//	"github.com/jmoiron/sqlx"	
+)
 
 var defaultSchema = `
 {{- range .Entities }}
@@ -15,30 +18,34 @@ CREATE TABLE {{.Name}} (
 	created_at timestamp with time zone DEFAULT current_timestamp
 );	                                          
 {{- end}}
-`,
-	drop: `
+`
+var	drop =`
 {{- range .Entities }}
 drop table {{lowercase .Name}};
 {{- end}}
-`,
-}
+`
+
+
 
 func init() {
+/*
+	var db *sqlx.DB
+	var err error  
+	
+	// exactly the same as the built-in
+	db, err = sqlx.Open("sqlite3", ":memory:")
  
-var db *sqlx.DB
  
-// exactly the same as the built-in
-db = sqlx.Open("sqlite3", ":memory:")
- 
-// from a pre-existing sql.DB; note the required driverName
-db = sqlx.NewDb(sql.Open("sqlite3", ":memory:"), "sqlite3")
- 
-// force a connection and test that it worked
-err = db.Ping()
+	// force a connection and test that it worked
+	err = db.Ping()
 
 
-// execute a query on the server
-result, err := db.Exec(schema)
+
+	// from a pre-existing sql.DB; note the required driverName
+	db = sqlx.NewDb(sql.Open("sqlite3", ":memory:"), "sqlite3")
+
+	// execute a query on the server
+	result, err := db.Exec(schema)
 
 
 p := Place{}
@@ -57,7 +64,7 @@ err = db.Get(&id, "SELECT count(*) FROM place")
 // fetch at most 10 place names
 var names []string
 err = db.Select(&names, "SELECT name FROM place LIMIT 10")
-
+*/
 }
 
 {{end}}

@@ -12,6 +12,34 @@ import (
 
 {{with .Entity}}
 
+const (
+	{{.Name | lowercase}}ByIdStatement = 	`SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1`
+	{{.Name | lowercase}}AllStatement  = 	"SELECT * FROM {{.Name | lowercase| plural}} "+
+		"ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC"
+	{{.Name | lowercase}}DeleteStatement = 	`DELETE FROM {{.Name | lowercase | plural}} WHERE id=$1)`
+	{{.Name | lowercase}}InsertStatement =  {{template "repoinsert" .}}
+	{{.Name | lowercase}}LabelStatement  = 	"SELECT * FROM {{.Name | lowercase| plural}} "+
+		"ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC"
+)
+
+
+
+func {{.Name | lowercase}}UpdateStatement() string {
+	names:=[]string{ {{- range $index, $element := .Fields}}{{if ne .Name "ID"}}{{if ne .Kind "Parent"}}
+	{{- if gt $index 0}},{{end}} "{{$element.Name | lowercase}}" 
+	{{- end}}{{end}}{{end}} }
+	statement := "UPDATE {{.Name | lowercase}} SET"
+	for i,name := range names {
+		if i>0 {
+			statement= statement + ","
+		}
+		statement= statement+" "+ name+"= $"+ string(i+2)
+	}
+	statement= statement+ " WHERE id= $1"
+	
+	return statement
+}
+
 // {{.Name}}Repo is the interface for a {{.Name}} repository that will persist 
 // and retrieve data and has to be implemented for concrete Databases 
 // (e.g. db *sqlx.DB) or other respositories
@@ -23,7 +51,7 @@ type {{.Name}}Repo struct{
 // Get queries a {{.Name | lowercase}} by id, throws an error when id is not found
 func (repo {{.Name}}Repo) Get(id uint64) (*model.{{.Name}}, error) {
 	{{.Name | lowercase}} := new(model.{{.Name}})
-	if err := db.Get({{.Name | lowercase}}, "SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1", id); err != nil {
+	if err := repo.DB.Get({{.Name | lowercase}}, {{.Name | lowercase}}ByIdStatement, id); err != nil {
 		return nil, fmt.Errorf("get {{.Name | lowercase}} with id %d, %v", id, err)
 	}
 	return {{.Name | lowercase}}, nil
@@ -31,9 +59,9 @@ func (repo {{.Name}}Repo) Get(id uint64) (*model.{{.Name}}, error) {
 
 // GetAll returns all records ordered by the fields  with isLabel=true
 func (repo {{.Name}}Repo) GetAll() (model.{{.Name}}List, error) {
-	list := make(model.{{.Name}}List)
+	list := model.{{.Name}}List{}
 
-	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
+	rows, err := repo.DB.Queryx({{.Name | lowercase}}AllStatement)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +71,7 @@ func (repo {{.Name}}Repo) GetAll() (model.{{.Name}}List, error) {
 		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
 			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, err %v", err)
 		}
-		list = append(list, {{.Name | lowercase}})
+		list = append(list, *{{.Name | lowercase}})
 	}
 
 	if err := rows.Close(); err != nil {
@@ -54,8 +82,7 @@ func (repo {{.Name}}Repo) GetAll() (model.{{.Name}}List, error) {
 
 // Delete deletes the {{.Name | lowercase}} with id, throws an error when id is not found
 func (repo {{.Name}}Repo) Delete(id uint64) error {
-	deleteStatement := fmt.Sprintf("DELETE FROM {{.Name | lowercase | plural}} WHERE id=%d", id)
-	if _, err := db.Exec(deleteStatement); err != nil {
+	if _, err := repo.DB.Exec({{.Name | lowercase}}DeleteStatement, id); err != nil {
 		return fmt.Errorf("delete {{.Name | lowercase}} with id %d, %v", id, err)
 	}
 	return nil
@@ -63,8 +90,8 @@ func (repo {{.Name}}Repo) Delete(id uint64) error {
 
 // Update updates all fields in the database table with data from *{{.Name}})
 func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *model.{{.Name}}) error {
-	updateStatement := {{template "repoupdate" .}}
-	if _, err := db.NamedExec(updateStatement, {{.Name | lowercase}}); err != nil {
+		{{- $name := .Name }}
+	if _, err := repo.DB.Exec({{.Name | lowercase}}UpdateStatement(), {{.Name | lowercase}}.ID,{{- range $index, $element := .Fields}}{{if ne $element.Name "ID"}}{{if ne .Kind "Parent"}}{{if gt $index 0}}, {{end}}{{$name | lowercase}}.{{$element.Name}}{{end}}{{end}}{{end}} ); err != nil {
 		return fmt.Errorf("update {{.Name | lowercase| plural}}, %v", err)
 	}
 	return nil
@@ -72,8 +99,8 @@ func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *model.{{.Name}}) error {
 
 // Insert inserts a new record in the database table with data from *{{.Name}})
 func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *model.{{.Name}}) error {
-	insertStatement := {{template "repoinsert" .}}
-	if _, err := db.NamedExec(insertStatement, {{.Name | lowercase}}); err != nil {
+	{{- $name := .Name }}
+	if _, err := repo.DB.Exec({{.Name | lowercase}}InsertStatement, {{- range $index, $element := .Fields}}{{if ne $element.Name "ID"}}{{if ne .Kind "Parent"}}{{if gt $index 0}}, {{end}}{{$name | lowercase}}.{{$element.Name}}{{end}}{{end}}{{end}}); err != nil {
 		return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
 	}
 	return nil
@@ -84,7 +111,7 @@ func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *model.{{.Name}}) error {
 func (repo {{.Name}}Repo) GetLabels() (model.Labels, error) {
 	l := make(model.Labels)
 
-	rows, err := db.Queryx("SELECT * FROM {{.Name | lowercase| plural}} ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC")
+	rows, err := repo.DB.Queryx({{.Name | lowercase}}LabelStatement)
 	if err != nil {
 		return nil, err
 	}
@@ -110,10 +137,10 @@ func (repo {{.Name}}Repo) GetLabels() (model.Labels, error) {
 // GetAll{{$name | plural}}ForParentID returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
 func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) (model.{{.Name}}List, error)	{
-	list := make(model.{{.Name}}List)
+	list := model.{{.Name}}List{}
 
 	query:= fmt.Sprintf("SELECT * FROM {{.Name | lowercase| plural}} WHERE id=%d", parentID)
-	rows, err := db.Queryx(query)
+	rows, err := repo.DB.Queryx(query)
 	if err != nil {
 		return nil, fmt.Errorf("selecting {{.Name | lowercase| plural}} with id: '%d' from database, %v",parentID, err)
 	}
@@ -123,7 +150,7 @@ func (repo {{$name}}Repo) GetAll{{.Name | plural}}ByParentID(parentID uint64) (m
 		if err := rows.StructScan({{.Name | lowercase}}); err != nil {
 			return nil, fmt.Errorf("parsing {{.Name | lowercase| plural}} struct, %v", err)
 		}
-		list = append(list, {{.Name | lowercase}})
+		list = append(list, *{{.Name | lowercase}})
 	}
 
 	if err := rows.Close(); err != nil {

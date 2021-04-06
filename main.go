@@ -39,7 +39,7 @@ func main() {
 		log.Fatalf("ERROR: %v", err)
 	}
 
-	if err := c.AddModule("modules/mockdatabase/mockdatabase.yaml"); err != nil {
+	if err := c.AddModule("modules/sqldatabase/database.yaml"); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}
 

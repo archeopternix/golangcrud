@@ -162,7 +162,7 @@ func (m *Module) GenerateModule(app *model.Application) error {
 	pl := pluralize.NewClient()
 	// First we create a FuncMap with which to register the function.
 	funcMap := template.FuncMap{
-		"lowercase": strings.ToLower, "singular": pl.Singular, "plural": pl.Plural,
+		"lowercase": strings.ToLower, "singular": pl.Singular, "plural": pl.Plural, "inc": func(counter int) int { return counter + 1 },
 	}
 
 	for _, t := range m.Tasks {
