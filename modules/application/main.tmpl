@@ -8,13 +8,13 @@ package main
 import (
 	view "{{.Config.Name}}/view"
 	model "{{.Config.Name}}/model"
-	mock "{{.Config.Name}}/mockdatabase"
+	database "{{.Config.Name}}/database"
 )
 
 func main() {
 	env := model.Env{
 {{- range .Entities}}
-		{{.Name | plural}}:  mock.New{{.Name}}Repo(),
+		{{.Name | plural}}:  database.New{{.Name}}Repo(),
 {{- end}}		
 	}
 	server := view.NewServer(&env)

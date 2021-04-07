@@ -12,18 +12,18 @@ import (
 
 {{with .Entity}}
 
+// SQL statements
 const (
-	{{.Name | lowercase}}ByIdStatement = 	`SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1`
+	{{.Name | lowercase}}ByIDStatement = 	`SELECT * FROM {{.Name | lowercase | plural}} WHERE id=$1`
 	{{.Name | lowercase}}AllStatement  = 	"SELECT * FROM {{.Name | lowercase| plural}} "+
 		"ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC"
 	{{.Name | lowercase}}DeleteStatement = 	`DELETE FROM {{.Name | lowercase | plural}} WHERE id=$1)`
-	{{.Name | lowercase}}InsertStatement =  {{template "repoinsert" .}}
 	{{.Name | lowercase}}LabelStatement  = 	"SELECT * FROM {{.Name | lowercase| plural}} "+
 		"ORDER BY {{range $index, $field:=.Fields}}{{if eq .IsLabel true}}{{if gt $index 0}},{{end}}{{$field.Name}} {{end}}{{end}} ASC"
 )
 
 
-
+// {{.Name | lowercase}}UpdateStatement creates the UPDATE statement using templating technologies
 func {{.Name | lowercase}}UpdateStatement() string {
 	names:=[]string{ {{- range $index, $element := .Fields}}{{if ne .Name "ID"}}{{if ne .Kind "Parent"}}
 	{{- if gt $index 0}},{{end}} "{{$element.Name | lowercase}}" 
@@ -31,11 +31,31 @@ func {{.Name | lowercase}}UpdateStatement() string {
 	statement := "UPDATE {{.Name | lowercase}} SET"
 	for i,name := range names {
 		if i>0 {
-			statement= statement + ","
+			statement +=  ","
 		}
-		statement= statement+" "+ name+"= $"+ string(i+2)
+		statement += " "+ name+"= $"+ string(i+2)
 	}
-	statement= statement+ " WHERE id= $1"
+	statement += " WHERE id= $1"
+	
+	return statement
+}
+
+// {{.Name | lowercase}}InsertStatement creates the INSERT statement using templating technologies
+func {{.Name | lowercase}}InsertStatement() string {
+	names:=[]string{ {{- range $index, $element := .Fields}}{{if ne .Name "ID"}}{{if ne .Kind "Parent"}}
+	{{- if gt $index 0}},{{end}} "{{$element.Name | lowercase}}" 
+	{{- end}}{{end}}{{end}} }
+	
+	statement := `INSERT INTO {{.Name | lowercase}} ({{- range $index, $element := .Fields}}{{if ne .Name "ID"}}{{if ne .Kind "Parent"}}
+	{{- if gt $index 0}},{{end}} {{$element.Name | lowercase}} 
+	{{- end}}{{end}}{{end}}) VALUES `
+	for i := range names {
+		if i>0 {
+			statement += ", "
+		}
+		statement += string(i+1)
+	}
+	statement +=  " )"
 	
 	return statement
 }
@@ -48,10 +68,18 @@ type {{.Name}}Repo struct{
 	DB *sqlx.DB
 }
 
+// New{{.Name}}Repo creates a new {{.Name}}Repo repository and assigns a database 
+// connection to it
+func New{{.Name}}Repo(db *sqlx.DB) *{{.Name}}Repo{
+	repo := new({{.Name}}Repo)	
+	repo.DB = db
+	return repo
+}
+
 // Get queries a {{.Name | lowercase}} by id, throws an error when id is not found
 func (repo {{.Name}}Repo) Get(id uint64) (*model.{{.Name}}, error) {
 	{{.Name | lowercase}} := new(model.{{.Name}})
-	if err := repo.DB.Get({{.Name | lowercase}}, {{.Name | lowercase}}ByIdStatement, id); err != nil {
+	if err := repo.DB.Get({{.Name | lowercase}}, {{.Name | lowercase}}ByIDStatement, id); err != nil {
 		return nil, fmt.Errorf("get {{.Name | lowercase}} with id %d, %v", id, err)
 	}
 	return {{.Name | lowercase}}, nil
@@ -100,13 +128,13 @@ func (repo {{.Name}}Repo) Update({{.Name | lowercase}} *model.{{.Name}}) error {
 // Insert inserts a new record in the database table with data from *{{.Name}})
 func (repo {{.Name}}Repo) Insert({{.Name | lowercase}} *model.{{.Name}}) error {
 	{{- $name := .Name }}
-	if _, err := repo.DB.Exec({{.Name | lowercase}}InsertStatement, {{- range $index, $element := .Fields}}{{if ne $element.Name "ID"}}{{if ne .Kind "Parent"}}{{if gt $index 0}}, {{end}}{{$name | lowercase}}.{{$element.Name}}{{end}}{{end}}{{end}}); err != nil {
+	if _, err := repo.DB.Exec({{.Name | lowercase}}InsertStatement(), {{- range $index, $element := .Fields}}{{if ne $element.Name "ID"}}{{if ne .Kind "Parent"}}{{if gt $index 0}}, {{end}}{{$name | lowercase}}.{{$element.Name}}{{end}}{{end}}{{end}}); err != nil {
 		return fmt.Errorf("insert {{.Name | lowercase| plural}}, %v", err)
 	}
 	return nil
 }
 
-// GetLabelsFor returns a map with the key id and the value of
+// GetLabels returns a map with the key id and the value of
 // all fields tagged with isLabel=true and separated by a blank
 func (repo {{.Name}}Repo) GetLabels() (model.Labels, error) {
 	l := make(model.Labels)
