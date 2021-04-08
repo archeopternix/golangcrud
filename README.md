@@ -7,9 +7,9 @@ The configuration is done by writing a YAML File
 ### General Information
 Basic configuration settings for applications like name and the basepath where the target application should be generated to
 
-	config:
-	  name: SampleApp
-	  basepath: \Users\A.Eisner\go\src
+    config:
+	name: SampleApp
+	basepath: \Users\A.Eisner\go\src
 	settings:
 	  decimal_separator: ","
 	  currency_symbol: '€'
