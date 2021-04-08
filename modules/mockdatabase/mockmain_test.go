@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-
 func TestMain(m *testing.M) {
 {{range .Entities}}
 	{{.Name | lowercase}}db = New{{.Name}}Repo()
@@ -17,8 +16,6 @@ func TestMain(m *testing.M) {
 
 	os.Exit(m.Run())
 }
-
-
 
 {{end}}
 

@@ -71,8 +71,12 @@ Child side (1..) the will be added a ParentID (in the case below ProjectID) fiel
 ## Modules
 
 ### [Application](modules/application/README.md)
+Creates the main.go file and initializes the Environment and starts the Server
+[... more](modules/application/README.md)
 
 ### [Model](modules/model/README.md)
+The module model consist of the logic and templates for creation of all model entities including the type definition for a slice type holding an array of entities. In addition there is the interface which has to implemented by the database access logic in the repository.go
+[... more](modules/model/README.md)
 
 ### View based on echo and Bulma.css
 
