@@ -1,5 +1,9 @@
-# golangcrud
+# CRUD Generator: golangcrud 
 Application that generates a CRUD application with selectable modules for backend (repositories) and frontend (REST or web based application)
+
+## Installation
+
+	go get github.com/archeopternix/golangcrud
 
 ## Configuration File
 The configuration is done by writing a YAML File
