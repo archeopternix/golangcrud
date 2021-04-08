@@ -70,9 +70,9 @@ Child side (1..) the will be added a ParentID (in the case below ProjectID) fiel
 
 ## Modules
 
-### Application
+### [Application](modules/application/README.md)
 
-### Model
+### [Model](modules/model/README.md)
 
 ### View based on echo and Bulma.css
 
