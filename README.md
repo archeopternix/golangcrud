@@ -6,6 +6,7 @@ The configuration is done by writing a YAML File
 
 ### General Information
 Basic configuration settings for applications like name and the basepath where the target application should be generated to
+
 	config:
 	  name: SampleApp
 	  basepath: \Users\A.Eisner\go\src
@@ -18,6 +19,7 @@ Basic configuration settings for applications like name and the basepath where t
 
 ### Simple Entity
 Simple entity with the name and a list of field definitions. An ID field of type uint64 will be generated automatically which serves as primary + unique field in the database
+
 	user:
 	  name: User
 	  kind: default
@@ -35,6 +37,7 @@ Simple entity with the name and a list of field definitions. An ID field of type
 ### Entity with Lookup
 Entity with a field of kind 'Lookup'. Lookup fields will trigger the creation of an automatic generated lookup entity. 
 An ID field of type uint64 will be generated automatically which serves as primary + unique field in the database
+
 	task:
 	  name: Task
 	  kind: default
@@ -52,6 +55,7 @@ Relationship between different Entitites (currently supported 1..n).
 1..n: for this kind of relationship there will be generated fields on the one and many side automatically. 
 Parent side (..n) the will be a slice created that holds all mapped entries. 
 Child side (1..) the will be added a ParentID (in the case below ProjectID) field that holds the ID of the parent entity
+
 	relations:
 	- kind: one_to_many
 	  parent: Project
