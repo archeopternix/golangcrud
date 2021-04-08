@@ -8,11 +8,11 @@ Creates all entity models holding all fields with the addition that an ID field 
 Creates a global repository.go file which holds the interfaces to the entity specific repositories
 
 	... interface {
-	Get(id uint64) (*XXX, error)
-	GetAll() (XXXList, error) 
-	Delete(id uint64) error 
-	Update(x *XXX) error 
-	Insert(x *XXX) error 
-	GetLabels() (Labels, error)
-	GetAllXXXByParentID(parentID uint64) (XXXList)				
+	  Get(id uint64) (*XXX, error)
+	  GetAll() (XXXList, error) 
+	  Delete(id uint64) error 
+	  Update(x *XXX) error 
+	  Insert(x *XXX) error 
+	  GetLabels() (Labels, error)
+	  GetAllXXXByParentID(parentID uint64) (XXXList)				
 	}
