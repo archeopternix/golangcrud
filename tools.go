@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-
-	"gopkg.in/yaml.v3"
 )
 
 // DirectoryExistError will bne thrown by CheckMkdir when a directory already exists
@@ -102,6 +100,7 @@ func CopyFile(sourcefile, destfile string) error {
 	return nil
 }
 
+/*
 // StringYAML returns a YAML string of the data structure 'obj' or an error when
 // something went wrong
 func StringYAML(obj interface{}) (string, error) {
@@ -111,3 +110,4 @@ func StringYAML(obj interface{}) (string, error) {
 	}
 	return string(data), nil
 }
+*/

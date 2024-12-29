@@ -1,0 +1,18 @@
+modules:
+  Model Generator:
+    name: Model Generator
+    tasks:
+    - kind: copy
+      source:
+      - modules\models\static\test.go
+      - modules\models\static\test2.go
+      target: view\test
+      fileext: ""
+    - kind: template
+      source:
+      - modules\models\templates\model.tmpl
+      - modules\models\templates\kinds.tmpl
+      target: view\test
+      template: model
+      data: go
+      fileext: go
