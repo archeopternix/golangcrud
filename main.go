@@ -1,14 +1,52 @@
-// golangcrud project main.go
+// GenerationDSL project main.go
 package main
 
 import (
-	"fmt"
+	//	"fmt"
 	. "golangcrud/model"
+	"log"
 )
 
 func main() {
-	p := NewProject("Erstes Projekt")
-	Projects[p.Name] = *p
+	a := NewApplication()
 
-	fmt.Println(*p)
+	if err := a.LoadFromFile("projectmgnt.yaml"); err != nil {
+		log.Fatalf("ERROR: %v", err)
+	}
+	//	fmt.Println(a.StringYAML())
+
+	c := NewGenerator()
+	/*	if err := c.AddModule("modules/application/app.yaml"); err != nil {
+			log.Fatalf("ERROR: %v", err)
+		}
+		if err := c.AddModule("modules/model/models.yaml"); err != nil {
+			log.Fatalf("ERROR: %v", err)
+		}
+
+		 if err := c.AddModule("modules/mockdatabase/mockdatabase.yaml"); err != nil {
+			log.Fatalf("ERROR: %v", err)
+		}
+			if err := c.AddModule("modules/database/database.yaml"); err != nil {
+				log.Fatalf("ERROR: %v", err)
+			}
+
+				if err := c.AddModule("modules/view/view.yaml"); err != nil {
+			log.Fatalf("ERROR: %v", err)
+		}
+	*/
+
+	if err := c.AddModule("modules/databasetest/databasetest.yaml"); err != nil {
+		log.Fatalf("ERROR: %v", err)
+	}
+
+	if err := c.AddModule("modules/sqldatabase/database.yaml"); err != nil {
+		log.Fatalf("ERROR: %v", err)
+	}
+
+	if err := c.GenerateAll(a); err != nil {
+		log.Fatalf("ERROR: %v", err)
+	}
+
+	//	fmt.Println(c.StringYAML())
+
 }

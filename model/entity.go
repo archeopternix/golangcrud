@@ -1,62 +1,67 @@
-// Package model
+// Package model holds all entities which are needed for generation of the
+// target application
 package model
 
 import (
 	"time"
 )
 
-// Entity relates to an 'Object' that will have the CRUD functionality and will
-// be generated into a struct
+// Entity relates to an 'Object' or struct
 type Entity struct {
-	Name       string                  `json:"name"` // unique name for an entity
-	Fields     map[string]Field        `json:"fields"`
-	EntityType `json:"type,omitempty"` // 0..Standard, 1..Lookup
+	Name   string  `yaml:"name"`
+	Fields []Field `yaml:"fields"`
+	Kind   string  `yaml:"type,omitempty"` // 0..Normal, 1..Lookup 2..Many2Many
 }
 
-//
-type EntityType int
+// Field is each and every single attribute.
+// Object is empty except in case type=lookup or child keeps the name of the Object
+type Field struct {
+	Name     string `yaml:"name"`
+	Kind     string `yaml:"kind"` // string, int, bool, lookup, tel, email
+	Required bool   `yaml:"required,omitempty"`
+	IsLabel  bool   `yaml:"islabel,omitempty"` // when true is the shown text for select boxes
+	Object   string `yaml:"object,omitempty"`  // for lookup, child relations - mappingtable for many2many relations
+	Length   int    `yaml:"length,omitempty"`
+	Size     int    `yaml:"size,omitempty"` // for textarea size = cols
 
-const (
-	Standard EntityType = iota
-	Lookup
-)
+	Step int `yaml:"step,omitempty"` //for Number fields
+	Min  int `yaml:"min,omitempty"`  //for Number fields
+	Max  int `yaml:"max,omitempty"`  //for Number fields
 
-func (d EntityType) String() string {
-	return [...]string{"Standard", "Lookup"}[d]
+	Rows int `yaml:"rows,omitempty"` //for textarea
 }
 
-// Relation is the linking between 2 entities and can have different kinds of
-// relation types
+// Relation holds the definition for parent - child relationships.
+// When parsed by Application additional fields will be added to the child and parent
+// entities
 type Relation struct {
-	Id     string `json:"id"`
 	Parent string `json:"parent"`
 	Child  string `json:"child"`
 	Kind   string `json:"kind"` // "one2many", "many2many"
 }
 
-func NewEntity() *Entity {
-	e := new(Entity)
-	e.Fields = make(map[string]Field)
-	return e
+// AddField add fields to an entity
+func (e *Entity) AddField(f Field) {
+	e.Fields = append(e.Fields, f)
 }
 
-// FieldExists checks if a field with 'name' exists in the entity 'Fields' map
-func (e *Entity) FieldExists(name string) bool {
-	_, ok := e.Fields[name]
-	if ok {
-		return true
-	}
-	return false
-}
-
-func (e *Entity) AddField(f Field) error {
-	if e.FieldExists(f.Name) {
-		return NewErrEntryAlreadyExists(f.Name)
-	}
-	e.Fields[f.Name] = f
-	return nil
-}
-
+// TimeStamp neede for file generation. Will be added in the header of each file
+// to track the creation date and time of each file
 func (e Entity) TimeStamp() string {
-	return time.Now().Format(time.UnixDate)
+	return time.Now().Format(application.Settings.DateFormat + " " + application.Settings.TimeFormat)
 }
+
+/* Testcode:
+e := NewEntity()
+e.Name = "Role"
+e.addField(Field{Name: "Id", Type: inttype, Object: ""})
+e.addField(Field{Name: "Name", Type: stringtype, Object: ""})
+e.addField(Field{Name: "Accounts", Type: slicetype, Object: "Account"})
+
+err := Database.Insert(e)
+if err != nil {
+	panic(err)
+}
+
+_, es := getAllEntities()
+*/

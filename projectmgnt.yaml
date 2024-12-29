@@ -1,0 +1,66 @@
+# Application
+config:
+  name: SampleApp
+  basepath: \Users\A.Eisner\go\src
+settings:
+  decimal_separator: ","
+  currency_symbol: '€'
+  thousend_separator: "."
+  time_format: 15:04:05.000
+  date_format: 02.01.2006
+  
+relations:
+- kind: one_to_many
+  parent: Project
+  child: Task
+- kind: one_to_many
+  parent: Project
+  child: User
+entities:
+  project:
+    name: Project
+    kind: default
+    fields:
+    - name: Name
+      kind: Text
+      length: 25
+      required: true
+      islabel: true
+    - name: Description
+      kind: Longtext
+      length: 200
+      required: true
+    - name: Active
+      kind: Boolean
+  user:
+    name: User
+    kind: default
+    fields:
+    - name: Lastname
+      kind: Text
+      length: 45
+      required: true
+      islabel: true
+    - name: Firstname
+      kind: Text
+      length: 45
+      required: true
+      islabel: true
+    - name: Username
+      kind: Text
+      length: 45
+      required: true
+  task:
+    name: Task
+    kind: default
+    fields:
+    - name: Description
+      kind: Longtext
+      length: 200
+      required: true
+      islabel: true
+    - name: Tasktype
+      kind: Lookup
+
+
+  
