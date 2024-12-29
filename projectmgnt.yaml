@@ -1,7 +1,7 @@
 # Application
 config:
   name: SampleApp
-  basepath: \Users\A.Eisner\go\src
+  basepath: \Users\Andreas Eisner\go\src
 settings:
   decimal_separator: ","
   currency_symbol: '€'
