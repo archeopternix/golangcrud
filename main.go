@@ -9,6 +9,7 @@ import (
 
 func main() {
 	a := NewApplication()
+	a.Config.BasePath = "/Users/Andreas Eisner/go/src"
 
 	if err := a.LoadFromFile("projectmgnt.yaml"); err != nil {
 		log.Fatalf("ERROR: %v", err)
@@ -30,11 +31,11 @@ func main() {
 	if err := c.AddModule("modules/view/view.yaml"); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}
-
-	if err := c.AddModule("modules/databasetest/databasetest.yaml"); err != nil {
-		log.Fatalf("ERROR: %v", err)
-	}
-
+	/*
+		if err := c.AddModule("modules/databasetest/databasetest.yaml"); err != nil {
+			log.Fatalf("ERROR: %v", err)
+		}
+	*/
 	/*	if err := c.AddModule("modules/sqldatabase/database.yaml"); err != nil {
 			log.Fatalf("ERROR: %v", err)
 		}

@@ -1,66 +1,63 @@
-# Application
-config:
-  name: SampleApp
-  basepath: \Users\Andreas Eisner\go\src
+name: SampleProject
 settings:
-  decimal_separator: ","
-  currency_symbol: '€'
-  thousend_separator: "."
-  time_format: 15:04:05.000
-  date_format: 02.01.2006
-  
-relations:
-- kind: one_to_many
-  parent: Project
-  child: Task
-- kind: one_to_many
-  parent: Project
-  child: User
+    currency_symbol: €
+    decimal_separator: ','
+    thousend_separator: .
+    time_format: "15:04:05"
+    date_format: 01.02.2006
 entities:
-  project:
-    name: Project
-    kind: default
-    fields:
-    - name: Name
-      kind: Text
-      length: 25
-      required: true
-      islabel: true
-    - name: Description
-      kind: Longtext
-      length: 200
-      required: true
-    - name: Active
-      kind: Boolean
-  user:
-    name: User
-    kind: default
-    fields:
-    - name: Lastname
-      kind: Text
-      length: 45
-      required: true
-      islabel: true
-    - name: Firstname
-      kind: Text
-      length: 45
-      required: true
-      islabel: true
-    - name: Username
-      kind: Text
-      length: 45
-      required: true
-  task:
-    name: Task
-    kind: default
-    fields:
-    - name: Description
-      kind: Longtext
-      length: 200
-      required: true
-      islabel: true
-    - name: Tasktype
-      kind: Lookup
-
-
-  
+    customers:
+        name: Customers
+        type: Entity
+        fields:
+            city:
+                name: City
+                type: Text
+                optional: true                
+                auto: false
+            classification:
+                name: Classification
+                type: Lookup
+                optional: false
+                auto: false
+                lookup: customertype
+            email:
+                name: EMail
+                type: E-Mail
+                optional: false
+                auto: false
+                placeholder: test@yahoo.de
+            name:
+                name: Name
+                type: Text
+                optional: false
+                label: true
+                auto: false
+                maxlength: "5"
+    projects:
+        name: Projects
+        type: Entity
+        fields:
+            name:
+                name: Name
+                type: Text
+                optional: false
+                label: true
+                auto: false
+            startdate:
+                name: StartDate
+                type: Date
+                optional: false
+                auto: false
+relations:
+    customersone-to-manyprojects:
+        name: customersone-to-manyprojects
+        type: One-to-Many
+        source: Customers
+        destination: Projects
+lookups:
+    customertype:
+        list:
+            - A-Customer
+            - B-Customer
+            - C-Customer

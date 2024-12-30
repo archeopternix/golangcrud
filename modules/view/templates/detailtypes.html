@@ -25,10 +25,10 @@
                                   </div>
                                   {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
                                 </div>{{end}}
-{{- if eq .Kind "Email"}}          <div class="field">
+{{- if eq .Kind "E-Mail"}}          <div class="field">
                                   <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
                                   <div class="control has-icons-left">
-                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="email" placeholder="Email" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Length 0}}maxlength="{{.Length}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
+                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="email" placeholder="test@yahoo.de" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" {{if gt .Length 0}}maxlength="{{.Length}}"{{end}} {{if gt .Size 0}}size="{{.Size}}"{{end}} value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
                                   <span class="icon is-small is-left">
                                     <i class="fas fa-envelope"></i>
                                   </span>
@@ -45,6 +45,16 @@
                                   </div>
                                   {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
                                 </div>{{end}}
+{{- if eq .Kind "Date"}}          <div class="field">
+                                  <label class="label">{{.Name}}</label>
+                                  <div class="control has-icons-left">
+                                    <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="date" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
+                                    <span class="icon is-small is-left">
+                                      <i class="fas fa-calendar"></i>
+                                    </span>
+                                  </div>
+                                  {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
+                                </div>{{end}}                                
 {{- if eq .Kind "Integer"}}        <div class="field">
                                   <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
                                   <div class="control">
@@ -66,13 +76,13 @@
                                   </div>
                                 </div>{{end}}
 {{- if eq .Kind "Lookup"}}             <div class="field">
-                                  <label class="label">{{.Object}}</label>
+                                  <label class="label">{{.Name}}</label>
                                   <div class="control">
                                     <div class="select">
                                       <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}">
                                        {{"{{"}}$selected:=.Entity.{{.Name}}{{"}}"}}
-                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
-                                        <option value="{{"{{$key}}"}}" {{"{{"}}if eq $key $selected{{"}}"}}selected{{"{{"}}end{{"}}"}}>{{"{{$value}}"}}</option>
+                                       {{"{{"}}range $key, $value :=(.Lookups "{{.Object | plural}}"){{"}}"}}
+                                        <option value="{{"{{$value}}"}}" {{"{{"}}if eq $value $selected{{"}}"}}selected{{"{{"}}end{{"}}"}}>{{"{{$value}}"}}</option> 
                                       {{"{{end}}"}}
                                       </select>
                                     </div>

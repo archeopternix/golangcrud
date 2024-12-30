@@ -30,10 +30,13 @@ func (s Server) List{{plural .Name}}(c echo.Context) error {
 	data.Lookups = make(map[string]model.Labels)
 		
 	{{- $name := .Name}}
-	{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+	{{- range .Fields}}{{if eq .Kind "Child"}}
 	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
 	{{- end}}{{end}}
-	
+	{{- range .Fields}}{{if eq .Kind "Lookup"}}
+	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{title .Object}}.GetAll()	
+	{{- end}}{{end}}
+  	
 	p:=NewPage("{{.Name | plural}}", "{{.Name | plural}}")
 	p.Data = data
 	return c.Render(http.StatusOK, "{{lowercase .Name}}list", p)
@@ -65,10 +68,14 @@ func (s Server) Get{{.Name}}(c echo.Context) error {
 	data.{{.Object}}Childs = s.Env.{{$name | plural}}.GetAll{{.Object | plural}}ByParentID(asUint(id))
 	{{- end}}{{end}}
 	
-	// Labels for 'Lookup' or 'Parent' tables
-	{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+	// Labels for 'Parent' tables
+	{{- range .Fields}}{{if eq .Kind  "Child"}}
 	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
 	{{- end}}{{end}}
+	// Labels for 'Lookup' tables  
+	{{- range .Fields}}{{if eq .Kind "Lookup"}}
+	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{title .Object}}.GetAll()		
+	{{- end}}{{end}}   
 	
 	p:=NewPage("Edit {{.Name}}", "{{.Name | plural}}")
 	p.Data = data
@@ -92,10 +99,15 @@ func (s Server) New{{.Name}}(c echo.Context) error {
 	data.Lookups = make(map[string]model.Labels)
 	
 	{{- $name := .Name}}
-	{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+	{{- range .Fields}}{{if eq .Kind "Child"}}
 	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{.Object | plural}}.GetLabels()	
 	{{- end}}{{end}}
 	
+	{{- $name := .Name}}
+	{{- range .Fields}}{{if eq .Kind "Lookup"}}
+	data.Lookups["{{.Object | plural}}"], _ = s.Env.{{title .Object}}.GetAll()		
+	{{- end}}{{end}} 
+  
 	p:=NewPage("New {{.Name}}", "{{.Name | plural}}")
 	p.Data = data
 

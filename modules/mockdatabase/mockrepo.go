@@ -45,7 +45,12 @@ func (repo {{.Name}}Repo) Get(id uint64) (*model.{{.Name}}, error) {
 func (repo {{.Name}}Repo) GetAll() (model.{{.Name}}List, error) {
 	var list model.{{.Name}}List
 	for _,value:=range {{.Name | lowercase}}repo.data {
-		{{- range .Fields}}{{if eq .Kind "Lookup" "Child"}}
+//		{{- range .Fields}}{{if eq .Kind "Lookup"}}
+//		if {{.Object | lowercase}},_:= {{.Object | lowercase}}repo.Get(value.{{.Name}}); {{.Object | lowercase}}!=nil {
+//			value.{{.Object}} = {{.Object | lowercase}}.Label()
+//		}
+//		{{- end}}
+		{{if eq .Kind "Child"}}
 		if {{.Object | lowercase}},_:= {{.Object | lowercase}}repo.Get(value.{{.Name}}); {{.Object | lowercase}}!=nil {
 			value.{{.Object}} = {{.Object | lowercase}}.Label()
 		}

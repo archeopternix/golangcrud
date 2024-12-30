@@ -33,9 +33,10 @@ import (
 // itself and loads the settings and configuration from a YAML file.
 //
 type Application struct {
+	Name   string
 	Config struct {
 		BasePath string // Basepath in filesystem
-		Name     string
+
 	}
 	// Settings is the definition of the global attributes
 	Settings struct {
@@ -46,7 +47,13 @@ type Application struct {
 		DateFormat        string `yaml:"date_format"`
 	}
 	Entities  map[string]Entity
-	Relations []Relation
+	Relations map[string]Relation
+	Lookups   map[string]LookupList `yaml:"lookups"`
+}
+
+type LookupList struct {
+	Name string   `yaml:"name"`
+	List []string `yaml:"list"`
 }
 
 var once sync.Once
@@ -58,6 +65,8 @@ func NewApplication() *Application {
 	once.Do(func() {
 		application = new(Application)
 		application.Entities = make(map[string]Entity)
+		application.Relations = make(map[string]Relation)
+		application.Lookups = make(map[string]LookupList)
 	})
 
 	return application
@@ -103,37 +112,24 @@ func StringYAML(a interface{}) string {
 // or add additional fields (e.g. Id field for every entity)
 func (a *Application) parseDependencies() error {
 	for key, entity := range a.Entities {
-		for i, field := range entity.Fields {
+		for _, field := range entity.Fields {
 
-			// search for lookup fields
+			// If a lookup field is present check for lookup table
 			if field.Kind == "Lookup" {
-				// if entity exists and is not a lookup throw error
-				if e, ok := a.Entities[strings.ToLower(field.Name)]; ok {
-					if e.Kind != "Lookup" {
-						return fmt.Errorf("Entity with name '%s' could not be overwritten with Lookup", e.Name)
-					}
-				} else {
-					// create new Entity of kind lookup
-					a.Entities[strings.ToLower(field.Name)] = Entity{
-						Name: field.Name,
-						Kind: "Lookup",
-						Fields: []Field{
-							{Name: "Text", Required: true, Kind: "Text", IsLabel: true},
-							{Name: "Order", Kind: "Integer"},
-						},
-					}
+				if _, ok := a.Lookups[strings.ToLower(field.Lookup)]; !ok {
+					return fmt.Errorf("Lookup with name '%s' could not be found", field.Lookup)
 				}
-				entity := a.Entities[key]
-				entity.Fields[i].Object = entity.Fields[i].Name
-				entity.Fields[i].Name = entity.Fields[i].Name + "ID"
-				a.Entities[key] = entity
+				lk := field
+				lk.Object = field.Lookup
+				a.Entities[key].Fields[strings.ToLower(field.Name)] = lk
 			}
 		}
 	}
 
+	// Add an ID field to all entities
 	for key, entity := range a.Entities {
 		// add ID field
-		entity.Fields = append(entity.Fields, Field{Name: "ID", Kind: "Integer", Required: true})
+		entity.Fields["ID"] = Field{Name: "ID", Kind: "Integer", Required: true}
 		a.Entities[key] = entity
 	}
 
@@ -142,15 +138,19 @@ func (a *Application) parseDependencies() error {
 		if relation.Kind == "one_to_many" {
 			// add child field
 			childentity := a.Entities[strings.ToLower(relation.Child)]
-			childentity.Fields = append(childentity.Fields, Field{Name: relation.Parent + "ID", Kind: "Child", Object: relation.Parent})
+			childentity.Fields[relation.Parent+"ID"] = Field{Name: relation.Parent + "ID", Kind: "Child", Object: relation.Parent}
 			a.Entities[strings.ToLower(relation.Child)] = childentity
 			// add parent field
 			parententity := a.Entities[strings.ToLower(relation.Parent)]
-			parententity.Fields = append(parententity.Fields, Field{Name: relation.Child, Kind: "Parent", Object: relation.Child})
+			parententity.Fields[relation.Child] = Field{Name: relation.Child, Kind: "Parent", Object: relation.Child}
 			a.Entities[strings.ToLower(relation.Parent)] = parententity
-
 		}
 	}
+
+	/*	for _,lookup := range a.Lookups {
+			// do nothing so far
+		}
+	*/
 
 	return nil
 }

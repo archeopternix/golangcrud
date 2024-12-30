@@ -24,7 +24,7 @@ type {{.Name}}List []{{.Name}}
 // Label for {{.Name}} that will be shown in select boxes for one-2-many relationships
 // Select boxes returns the the ID of the parent Entity
 func (obj {{.Name}}) Label() (string) {
-	label:=fmt.Sprintf("{{range .Fields}}{{if eq .IsLabel true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .IsLabel true}}, obj.{{.Name}}{{end}}{{end}})
+	label:=fmt.Sprintf("{{range .Fields}}{{if eq .Label true}}%v {{end}}{{end}}"{{range .Fields}}{{if eq .Label true}}, obj.{{.Name}}{{end}}{{end}})
 	return label
 }
 {{end}}

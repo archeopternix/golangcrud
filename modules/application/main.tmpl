@@ -6,16 +6,19 @@
 package main
 
 import (
-	view "{{.Config.Name}}/view"
-	model "{{.Config.Name}}/model"
-	database "{{.Config.Name}}/database"
+	view "{{.Name}}/view"
+	model "{{.Name}}/model"
+	database "{{.Name}}/database"
 )
 
 func main() {
 	env := model.Env{
-{{- range .Entities}}
-		{{.Name | plural}}:  database.New{{.Name}}Repo(),
-{{- end}}		
+  {{- range .Entities}}
+      {{.Name | plural}}:  database.New{{.Name}}Repo(),
+  {{- end}}		
+  {{- range $key, $value := .Lookups}}
+      {{title $key}}: model.New{{title $key}}Repo(),
+  {{- end}}		
 	}
 	server := view.NewServer(&env)
 	// Start server

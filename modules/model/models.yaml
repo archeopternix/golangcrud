@@ -16,6 +16,15 @@ tasks:
   target: model
   template: repository
   filename: repository
+  
+- kind: template
+  fileext: .go
+  source:
+  - templates\lookups.tmpl
+  target: model
+  template: lookups
+  filename: lookups
+  
 
 
 
