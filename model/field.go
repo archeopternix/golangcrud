@@ -7,7 +7,7 @@ package model
 type Field struct {
 	Name     string `yaml:"name"`
 	Kind     string `yaml:"type"` // string, int, bool, lookup, tel, email
-	Required bool   `yaml:"optional,omitempty"`
+	Required bool   `yaml:"required,omitempty"`
 	Label    bool   `yaml:"label,omitempty"`  // when true is the shown text for select boxes
 	Object   string `yaml:"object,omitempty"` // for lookup, child relations - mappingtable for many2many relations
 	Length   int    `yaml:"length,omitempty"`

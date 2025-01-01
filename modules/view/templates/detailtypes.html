@@ -35,7 +35,7 @@
                                   </div>
                                   {{- "{{"}}with $errors.{{.Name}}{{"}}"}} <p class="help is-danger">{{"{{"}}.{{"}}"}} </p>{{"{{"}}end{{"}}"}}
                                 </div>{{end}}
-{{- if eq .Kind "Tel"}}          <div class="field">
+{{- if eq .Kind "Phone"}}          <div class="field">
                                   <label class="label">{{.Name}} {{with .Required}}*{{end}}</label>
                                   <div class="control has-icons-left">
                                     <input class="input{{"{{"}}with $errors.{{.Name}}{{"}}"}} is-danger{{"{{"}}end{{"}}"}}" type="tel" placeholder="+49" name="{{.Name | lowercase}}" id="{{.Name | lowercase}}" value="{{"{{"}}.Entity.{{.Name}}{{"}}"}}" {{with .Required}}required{{end}}>
@@ -81,7 +81,7 @@
                                     <div class="select">
                                       <select name="{{.Name | lowercase}}" id="{{.Name | lowercase}}">
                                        {{"{{"}}$selected:=.Entity.{{.Name}}{{"}}"}}
-                                       {{"{{"}}range $key, $value :=(.Lookups "{{.Object | plural}}"){{"}}"}}
+                                       {{"{{"}}range $key, $value :=(index .Lookups "{{.Object | plural}}"){{"}}"}}
                                         <option value="{{"{{$value}}"}}" {{"{{"}}if eq $value $selected{{"}}"}}selected{{"{{"}}end{{"}}"}}>{{"{{$value}}"}}</option> 
                                       {{"{{end}}"}}
                                       </select>

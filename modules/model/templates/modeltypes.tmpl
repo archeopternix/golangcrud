@@ -5,7 +5,7 @@
 {{- if eq .Kind "Number"}}	{{.Name}}	float64	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
 {{- if eq .Kind "Boolean"}}	{{.Name}}	bool	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
 {{- if eq .Kind "E-Mail"}}	{{.Name}}	string	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
-{{- if eq .Kind "Tel"}}	{{.Name}}	string	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
+{{- if eq .Kind "Phone"}}	{{.Name}}	string	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
 {{- if eq .Kind "Longtext"}}	{{.Name}}	string	`form:"{{lowercase .Name}}" ,db:"{{lowercase .Name}}"`{{end}}
 {{- if eq .Kind "Time"}}	{{.Name}}	string	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}
 {{- if eq .Kind "Date"}}	{{.Name}}	string	`form:"{{lowercase .Name}}", db:"{{lowercase .Name}}"`{{end}}

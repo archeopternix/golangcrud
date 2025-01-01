@@ -10,6 +10,13 @@ entities:
         name: Customers
         type: Entity
         fields:
+            name:
+                name: Name
+                type: Text
+                optional: false
+                label: true
+                auto: false
+                maxlength: "5"
             city:
                 name: City
                 type: Text
@@ -27,13 +34,6 @@ entities:
                 optional: false
                 auto: false
                 placeholder: test@yahoo.de
-            name:
-                name: Name
-                type: Text
-                optional: false
-                label: true
-                auto: false
-                maxlength: "5"
     projects:
         name: Projects
         type: Entity

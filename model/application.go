@@ -135,7 +135,7 @@ func (a *Application) parseDependencies() error {
 
 	// add fields for relationships between entities
 	for _, relation := range a.Relations {
-		if relation.Kind == "one_to_many" {
+		if relation.Kind == "One-to-Many" {
 			// add child field
 			childentity := a.Entities[strings.ToLower(relation.Child)]
 			childentity.Fields[relation.Parent+"ID"] = Field{Name: relation.Parent + "ID", Kind: "Child", Object: relation.Parent}
